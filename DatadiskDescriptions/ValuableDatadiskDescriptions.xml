@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Source>
+  <string-array name="descriptions">
+    <item>It contains a starchart. It has several marked points of interest in a far-off system.</item>
+    <item>It contains ancient launch records and shipping manifests for a defunct asteroid mining corporation.</item>
+    <item>It contains a pre-authorised transfer of several Glitterworld currencies to this datadisk, pending approval.</item>
+    <item>It contains a scanned image of various indecipherable symbols. A cursory glance appears to show some kind of humanoid lifeform pointing towards an unknown galaxy.</item>
+    <item>It contains an old archotech schematic for 'Scyther' class Mechanoid Scout Units.</item>
+    <item>It contains an old map pointing to a vault of silver and gold. It is unknown whether this map is still accurate.</item>
+    <item>It contains an old research paper on the potential application of mind control with joywire technology.</item>
+    <item>It contains security access codes for aquatic arcologies of the \u003CDATA CORRUPTED\u003E system.</item>
+    <item>It contains an old archotech field analysis report on temporal dilation on local wildlife.</item>
+    <item>It contains a starchart showing high traffic shipping routes throughout various Urbworld colonies.</item>
+    <item>It contains one large text file titled: 'Designing Games: A Guide to Engineering Experiences'.</item>
+    <item>It contains various autopsy files on Boomalopes and Boomrats.</item>
+    <item>It contains a high profile shipping route for Ambrosia.</item>
+    <item>It contains a scanned image of a tattered document. Of what text is readable, it appears to be designs for a metallic peice of headgear that can effectively lessen psychic effects on the wearer.</item>
+    <item>This datadisk appears to contain the base blueprint of a 'Subpersona' level artifical intelligence.</item>
+  </string-array>
+  
+</Source>
