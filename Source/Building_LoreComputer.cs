@@ -10,14 +10,14 @@ namespace ImmersiveResearch
 {
     class Building_LoreComputer : Building_WorkTable
     {
-        private CompPowerTrader powerComp;
-        private CompGlower glowerComp;
+        private CompPowerTrader _powerComp;
+        private CompGlower _glowerComp;
 
         public CompPowerTrader PowerComponent
         {
             get
             {
-                return powerComp;
+                return _powerComp;
             }
         }
 
@@ -26,13 +26,13 @@ namespace ImmersiveResearch
 
         }
 
-        // Do something after object is spawned in game
+
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
 
-            powerComp = this.GetComp<CompPowerTrader>();
-            glowerComp = GetComp<CompGlower>();
+            _powerComp = this.GetComp<CompPowerTrader>();
+            _glowerComp = GetComp<CompGlower>();
 
         }
 
@@ -58,18 +58,22 @@ namespace ImmersiveResearch
             return disk;
         }
 
+
         public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
         {
             base.Destroy(mode);
         }
+
 
         public override void TickRare()
         {
             base.TickRare();
         }
 
+
         public bool CheckIfLinkedToResearchBench()
         {
+            // just loop through all potential linkable objects and check that they are connected (by checking the linked objects list of linked objects).
             CompProperties_Facility props = this.def.GetCompProperties<CompProperties_Facility>();
             if(props.linkableBuildings != null)
             {

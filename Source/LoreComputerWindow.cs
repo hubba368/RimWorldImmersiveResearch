@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace ImmersiveResearch
 {
+    // UNUSED CLASS
     // UI class todo
     public class LoreComputerWindow : Window
     {

@@ -45,19 +45,16 @@ namespace ImmersiveResearch
     static class LoreComputerHarmonyPatches
     {
 
-        private static float NeolithicProbability = 40.0f;
-        private static float MedievalProbability = 20.0f;
-        private static float IndustrialProbability = 10.0f;
-        private static float SpacerProbability = 5.0f;
-        private static float RareDatadiskProbability = 20.0f;
-        private static float SuperRareDatadiskProbability = 5.0f;
+        private static float _neolithicProbability = 40.0f;
+        private static float _medievalProbability = 20.0f;
+        private static float _industrialProbability = 10.0f;
+        private static float _spacerProbability = 5.0f;
+        private static float _rareDatadiskProbability = 20.0f;
+        private static float _superRareDatadiskProbability = 5.0f;
 
-        private static string CurrentSaveName = "";
+        private static string _currentSaveName = "";
 
-        private static bool GenerateResearchWeightingFlag = false;
-        private static bool openWindowFlag = false;
-
-        public static List<ResearchProjectDef> tempResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
+        public static List<ResearchProjectDef> TempResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
 
         public static Dictionary<string, Tuple<bool, float>> UndiscoveredResearchList = new Dictionary<string, Tuple<bool, float>>();                  // dictionary of all possible research options, with respective 'discovered' flags and weightings.
 
@@ -79,12 +76,6 @@ namespace ImmersiveResearch
             HarmonyMethod LoadGameResearchPatchMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("LoadGameInit"));
 
             harmony.Patch(LoadGameResearchTargetMethod, null, LoadGameResearchPatchMethod);
-
-            // game
-            //MethodInfo test1 = AccessTools.Method(typeof(Map), "FinalizeInit");
-            //HarmonyMethod test2 = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("OpenResearchWindowOnStart"));
-
-            //harmony.Patch(test1, null, test2);
 
             // Save game patch
             MethodInfo SaveGameTargetMethod = AccessTools.Method(typeof(SafeSaver), "Save");
@@ -173,11 +164,12 @@ namespace ImmersiveResearch
             harmony.Patch(researchRandomEventTargetMethod, researchRandomEventMethod, null);*/
         }
 
-
+        // postfix patch of 'StartedNewGame'.
+        // Initialise our undiscovered research list and remove undiscovereds from the main list.
         public static void NewGameInit()
         {
             UndiscoveredResearchList.Clear();
-            foreach (ResearchProjectDef proj in tempResearchList)
+            foreach (ResearchProjectDef proj in TempResearchList)
             {
                 //if(proj.defName == "BlindResearch") { continue; }
                 if (proj.IsFinished)
@@ -194,6 +186,8 @@ namespace ImmersiveResearch
         }
 
 
+        // postfix patch of 'LoadedGame'
+        // Load our undiscovered research list from file and remove undiscovereds from the main list.
         public static void LoadGameInit()
         {
             UndiscoveredResearchList.Clear();
@@ -202,12 +196,12 @@ namespace ImmersiveResearch
             // so we should not need to check for duplicate xml files cause there theoretically should never BE any duplicated files
             // load research projects that are fully completed.
             // and reload previous undiscovered research data
-            Dictionary<string, bool> tempDict = LoadResearchDetailsFromFile(CurrentSaveName);
+            Dictionary<string, bool> tempDict = LoadResearchDetailsFromFile(_currentSaveName);
 
             if(tempDict == null)
             {
                 Log.Error("something went wrong with research details retrieval. Defaulting to vanilla research graph.");
-                foreach (ResearchProjectDef proj in tempResearchList)
+                foreach (ResearchProjectDef proj in TempResearchList)
                 {
                     UndiscoveredResearchList.Add(proj.defName, new Tuple<bool, float>(true, 0.0f));
                 }
@@ -231,6 +225,7 @@ namespace ImmersiveResearch
             GenerateAllResearchWeightings();
         }
 
+
         #region UTIL FUNCTIONS
 
         private static Dictionary<string, bool> LoadResearchDetailsFromFile(string saveName)
@@ -251,7 +246,7 @@ namespace ImmersiveResearch
             var researchProjs = rootNodes.ToDictionary(n => n.Name.ToString(), n => n.Value);
             Dictionary<string, bool> newDict = new Dictionary<string, bool>();
 
-            // have to convert from xml boolean
+            // have to convert from xml boolean to C# version
             foreach (var item in researchProjs)
             {
                 char c = char.ToUpper(item.Value[0]);
@@ -262,17 +257,20 @@ namespace ImmersiveResearch
             return newDict;
         }
 
+        // prefix patch of 'SaveGame'.
         public static void GetSelectedSaveName(ref string fileName)
         {
-            CurrentSaveName = fileName;
+            _currentSaveName = fileName;
         }
 
+        // prefix patch of 'Save'.
         public static void SaveGameUtility()
         {
             SaveResearchDetailsToFile();
             SaveDiskDescriptionsToFile();
         }
 
+        
         private static void SaveResearchDetailsToFile()
         {
             Dictionary<string, bool> savFileDict = new Dictionary<string, bool>();
@@ -281,13 +279,14 @@ namespace ImmersiveResearch
                 savFileDict.Add(UndiscoveredResearchList.ElementAt(i).Key, UndiscoveredResearchList.ElementAt(i).Value.Item1);
             }
          
-            XElement saveFileName = new XElement("SaveName", CurrentSaveName);
+            XElement saveFileName = new XElement("SaveName", _currentSaveName);
             XElement researchDetails = new XElement("ResearchDetails", from keyValue in savFileDict select new XElement(keyValue.Key.Replace(" ", string.Empty), keyValue.Value));
 
             XDocument root = new XDocument(new XElement("root", saveFileName, researchDetails));
 
-            root.Save(GetModFilePath() + @"\\" + CurrentSaveName + "ResearchDetails.xml");
+            root.Save(GetModFilePath() + @"\\" + _currentSaveName + "ResearchDetails.xml");
         }
+
 
         private static void SaveDiskDescriptionsToFile()
         {
@@ -302,14 +301,15 @@ namespace ImmersiveResearch
                 descriptionDict.Add(DatadiskUniqueDescriptions.ElementAt(i).Key, DatadiskUniqueDescriptions.ElementAt(i).Value);
             }
 
-            XElement saveFileName = new XElement("SaveName", CurrentSaveName);
+            XElement saveFileName = new XElement("SaveName", _currentSaveName);
             XElement descriptionDetails = new XElement("DescriptionDetails", from keyValue in descriptionDict select new XElement("T" + keyValue.Key.ToString(), keyValue.Value));
 
             XDocument root = new XDocument(new XElement("root", saveFileName, descriptionDetails));
 
-            descriptionDetails.Save(GetModFilePath() + @"\\" + CurrentSaveName + "DescriptionDetails.xml");
+            descriptionDetails.Save(GetModFilePath() + @"\\" + _currentSaveName + "DescriptionDetails.xml");
         }
 
+        // patches the 'Complete all research' debug mode button.
         public static void AddResearchToListIfDebugMode()
         {
             for(int i = 0; i < UndiscoveredResearchList.Count(); i++)
@@ -317,16 +317,17 @@ namespace ImmersiveResearch
                 if(UndiscoveredResearchList.ElementAt(i).Value.Item1 == false)
                 {
                     AddNewResearch(UndiscoveredResearchList.ElementAt(i).Key);
-                    for(int j = 0; j < tempResearchList.Count(); j++)
+                    for(int j = 0; j < TempResearchList.Count(); j++)
                     {
-                        if(tempResearchList[j].label == UndiscoveredResearchList.ElementAt(i).Key)
+                        if(TempResearchList[j].label == UndiscoveredResearchList.ElementAt(i).Key)
                         {
-                            Find.ResearchManager.FinishProject(tempResearchList[j]);
+                            Find.ResearchManager.FinishProject(TempResearchList[j]);
                         }
                     }
                 }
             }
         }
+
 
         public static void ResearchRandomEvent(ref float amount, ref Pawn researcher)
         {// unused for now
@@ -339,6 +340,7 @@ namespace ImmersiveResearch
 
         #region DATADISK RELATED FUNCTIONS
 
+        //postfix patch of Thing.Destroy
         public static void RemoveDatadiskFromDict(Thing __instance)
         {
             if(__instance.def.defName == "UselessDatadisk" || __instance.def.defName == "ValuableDatadisk")
@@ -348,6 +350,7 @@ namespace ImmersiveResearch
             }
         }
 
+        // postfix patch of Inspection window text generation
         public static void ModifyUniqueDatadiskInspectText(ref Thing thing, StatDrawEntry __result)
         {
             if (!thing.DestroyedOrNull())
@@ -368,22 +371,24 @@ namespace ImmersiveResearch
             }
         }
 
+
         public static Thing ChooseDataDiskTypeOnDecrypt()
         {
             // choose datadisk at random weighting
             float threshold = Rand.Range(0, 100);
            
-            if(threshold <= SuperRareDatadiskProbability)
+            if(threshold <= _superRareDatadiskProbability)
             {
                 return CreateDataDiskThing("ValuableDatadisk");
             }
-            else if(threshold <= RareDatadiskProbability && threshold > SuperRareDatadiskProbability)
+            else if(threshold <= _rareDatadiskProbability && threshold > _superRareDatadiskProbability)
             {
                 CreateDataDiskThing("ResearchDatadisk");
             }
 
             return CreateDataDiskThing("UselessDatadisk");
         }
+
 
         private static Thing CreateDataDiskThing(string thingDefName)
         {          
@@ -407,6 +412,7 @@ namespace ImmersiveResearch
                             
             return datadisk;
         }
+
 
         private static string GetModFilePath()
         {
@@ -439,6 +445,7 @@ namespace ImmersiveResearch
             return relativePath;
         }
 
+
         private static string GenerateRandomDatadiskDescription(Thing datadisk)
         {
             // generate a random description from xml files depending on datadisk type.
@@ -467,6 +474,7 @@ namespace ImmersiveResearch
             return description;
         }
 
+        // prefix patch of Thing.ButcherProducts
         public static void AddDataDiskToMechanoidLoot(Thing __instance)
         {
             if (__instance.def.race.FleshType == FleshTypeDefOf.Mechanoid)
@@ -475,25 +483,29 @@ namespace ImmersiveResearch
             }
         }
 
+        // postfix patch of TradeShip.GenerateThings
         public static void AddDatadiskToStock(TradeShip __instance)
         {
             // not sure if we need to edit ship stocks as they are auto added to stocks via XML tags
             __instance.Goods.Add<Thing>(CreateDataDiskThing("EncryptedDatadisk"));
         }
 
+        // postfix patch of Bandit camp reward generation
         public static void AddDataDiskToBanditQuestReward(List<Thing> __result)
         {
             __result.Add(CreateDataDiskThing("EncryptedDatadisk"));
         }
 
+        
         public static void AddDataDiskToDropPodEvent(ref IEnumerable<Thing> things)
         {
             things.Add(CreateDataDiskThing("EncryptedDatadisk"));
         }
+
         #endregion
 
-
         #region RESEARCH GRAPH RELATED FUNCTIONS
+
 
         private static void GenerateAllResearchWeightings()
         {
@@ -503,7 +515,7 @@ namespace ImmersiveResearch
             // you can't make changes to a dict that you are iterating over
             for (int i = 0; i < tempList.Count; ++i)
             {
-                var temp = tempResearchList.Where(item => item.defName == UndiscoveredResearchList.ElementAt(i).Key);
+                var temp = TempResearchList.Where(item => item.defName == UndiscoveredResearchList.ElementAt(i).Key);
                 foreach (ResearchProjectDef currentProj in temp)
                 {
                     float weight = GenerateUniqueResearchWeighting(currentProj);
@@ -512,6 +524,7 @@ namespace ImmersiveResearch
                 }
             }
         }
+
 
         private static float GenerateUniqueResearchWeighting(ResearchProjectDef proj)
         {
@@ -534,16 +547,16 @@ namespace ImmersiveResearch
             switch (proj.techLevel)
             {
                 case TechLevel.Neolithic:
-                    projWeighting += NeolithicProbability;
+                    projWeighting += _neolithicProbability;
                     break;
                 case TechLevel.Medieval:
-                    projWeighting += MedievalProbability;
+                    projWeighting += _medievalProbability;
                     break;
                 case TechLevel.Industrial:
-                    projWeighting += IndustrialProbability;
+                    projWeighting += _industrialProbability;
                     break;
                 case TechLevel.Spacer:
-                    projWeighting += SpacerProbability;
+                    projWeighting += _spacerProbability;
                     break;
                 default:
                     break;
@@ -589,27 +602,27 @@ namespace ImmersiveResearch
         }
 
 
-        public static void AddNewResearch(string researchName)
+        private static void AddNewResearch(string researchName)
         {
             //Log.Error("New research name: " + researchName, false);
             FillResearchGraph(researchName);
         }
 
-
+        // prefix patch of ResearchWindow DrawRightRect function
         // UI update function called on the righthand research window when it is opened.
         public static void UpdateResearchGraph()
         {
             List<ResearchProjectDef> researchDatabaseRef = DefDatabase<ResearchProjectDef>.AllDefsListForReading;
             // empty the research graph every time we open the research window if we need to
 
-            if (researchDatabaseRef.Count() < tempResearchList.Count())
+            if (researchDatabaseRef.Count() < TempResearchList.Count())
             {
                 EmptyResearchGraphOfUndiscovered(researchDatabaseRef);
             }          
         }
 
 
-        static bool EmptyResearchGraphOfUndiscovered(List<ResearchProjectDef> Rlist)
+        private static bool EmptyResearchGraphOfUndiscovered(List<ResearchProjectDef> Rlist)
         {
 
             for (int index = 0; index < Rlist.Count; ++index)
@@ -679,9 +692,9 @@ namespace ImmersiveResearch
         }
 
 
-        static void FillResearchGraph(string researchName)
+        private static void FillResearchGraph(string researchName)
         {
-            var ResearchToAdd = tempResearchList.Where(item => item.defName == researchName);
+            var ResearchToAdd = TempResearchList.Where(item => item.defName == researchName);
 
             foreach (ResearchProjectDef proj in ResearchToAdd)
             {
@@ -695,7 +708,6 @@ namespace ImmersiveResearch
             //Log.Error("Is new research discovered: " + UndiscoveredResearchList[researchName].Item1.ToString(), false);
         }
         #endregion
-
 
         #region WORK TOIL RELATED FUNCTIONS
 
@@ -713,12 +725,8 @@ namespace ImmersiveResearch
             return targetParams;
         }
 
-        /// <summary>
-        /// Creates a drop down menu when you right click on a specific target.
-        /// </summary>
-        /// <param name="clickPos"></param>
-        /// <param name="pawn"></param>
-        /// <param name="opts"></param>
+        // postfix patch of Drop down menu function
+        // Creates a drop down menu when you right click on a specific target.
         public static void AddComputerDropDownMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
             // check against our custom target parameters that we are clicking what we need to click on
@@ -736,7 +744,7 @@ namespace ImmersiveResearch
 
                     bool CheckIfAllResearchDone()
                     {
-                        int maxNumOfResearches = tempResearchList.Count();
+                        int maxNumOfResearches = TempResearchList.Count();
                         int counter = 1;
                         for (int i = 0; i < UndiscoveredResearchList.Count(); i++)
                         {
@@ -757,6 +765,7 @@ namespace ImmersiveResearch
                     }
 
                     // create our button press local functions
+                    // research disks
                     void Action4()
                     {
                         if (!pawnTarget.CheckIfLinkedToResearchBench())
@@ -783,6 +792,7 @@ namespace ImmersiveResearch
                         }                       
                     }
 
+                    // locked disks
                     void Action5()
                     {
                         if (pawnTarget.GetLocationOfOwnedThing("LockedDatadisk") == null)

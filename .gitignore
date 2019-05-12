@@ -6,7 +6,10 @@
 
 # miss assemblies file
 Assemblies/
-
+LoreFriendlyWiki.sln
+Source/LoreFriendlyWiki.csproj
+Source/Properties/
+Source/packages.config
 
 # User-specific files
 *.rsuser

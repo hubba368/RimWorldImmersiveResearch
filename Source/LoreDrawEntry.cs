@@ -7,6 +7,7 @@ namespace ImmersiveResearch
 {
     public class LoreDrawEntry
     {
+        // UNUSED CLASS
         private string mEntryLabel;
         private string mEntryBasicDesc;
         

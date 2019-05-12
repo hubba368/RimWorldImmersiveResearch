@@ -9,6 +9,7 @@ using RimWorld;
 
 namespace ImmersiveResearch
 {
+    // UNUSED CLASS 
     /// <summary>
     /// This is the RimWorld equivalent to a behaviour tree
     /// Essentially makes a selected pawn attempt to interact with the lore computer object in the 
@@ -16,11 +17,11 @@ namespace ImmersiveResearch
     /// </summary>
     class JobDriver_LoreComputer : JobDriver
     {
-        private Building LoreComp => (Building)base.TargetThingA;
+        private Building _loreComp => (Building)base.TargetThingA;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            return this.pawn.Reserve(this.LoreComp, this.job, 1, -1, null);
+            return this.pawn.Reserve(this._loreComp, this.job, 1, -1, null);
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -34,7 +35,7 @@ namespace ImmersiveResearch
             accessDatabase.initAction = delegate
             {
                 var actor = accessDatabase.actor;
-                if (!LoreComp.IsBrokenDown())
+                if (!_loreComp.IsBrokenDown())
                 {
                    // Log.Error("Attempting to create lore window from job driver", false);
                     Find.WindowStack.Add(new LoreComputerWindow());

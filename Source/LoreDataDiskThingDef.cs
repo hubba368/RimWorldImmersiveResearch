@@ -9,6 +9,6 @@ namespace ImmersiveResearch
 {
     public class LoreDataDiskThingDef : ThingDef
     {
-        // add datadisk specific actions here
+        // add datadisk specific actions here (UNUSED)
     }
 }
