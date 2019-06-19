@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <!-- ITab titles -->
+  <TabExperiments>Experiments</TabExperiments>
+
+
+  <!-- Bills tab  -->
+  <AddBill>Add Experiment</AddBill>
+  <RecipeRequiresSkills>The recipe {0} requires the skills below. None of your colonists have these skills, so nobody will do this bill.</RecipeRequiresSkills>
+  <MinimumSkill>Min skill</MinimumSkill>
+  <SuspendedCaps>SUSPENDED</SuspendedCaps>
+  <BoundWorkerIs>Worker: {1_labelShort}</BoundWorkerIs>
+  <PlantVerb>Plant</PlantVerb>
+  <ClipboardBillNotAvailableHere>Copied bill cannot be pasted here.</ClipboardBillNotAvailableHere>
+  <ReorderBillUpTip>Move up</ReorderBillUpTip>
+  <ReorderBillDownTip>Move down</ReorderBillDownTip>
+  <DeleteBillTip>Delete</DeleteBillTip>
+  <CopyBillTip>Copy to the clipboard</CopyBillTip>
+  <SuspendBillTip>Suspend</SuspendBillTip>
+  <PasteBillTip>Paste</PasteBillTip>
+  <PasteBillTip_LimitReached>can't add more</PasteBillTip_LimitReached>
+</LanguageData>

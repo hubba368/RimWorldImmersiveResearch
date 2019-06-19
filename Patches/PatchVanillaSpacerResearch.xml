@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="AdvancedFabrication"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Construction</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Cryptosleep"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PoweredArmor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Weaponry</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ChargedShot"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Weaponry</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Bionics"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Medical</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SniperTurret"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Weaponry</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipBasics"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipCryptosleep"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipReactor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipEngine"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipComputerCore"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShipSensorCluster"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacecraft</li>
+          <li>Spacer</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+</Patch>

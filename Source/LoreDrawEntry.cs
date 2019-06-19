@@ -8,22 +8,30 @@ namespace ImmersiveResearch
     public class LoreDrawEntry
     {
         // UNUSED CLASS
-        private string mEntryLabel;
-        private string mEntryBasicDesc;
-        
+        private string _EntryLabel;
+        private string _EntryBasicDesc;
+
+        public string EntryLabel
+        {
+            get
+            {
+                return _EntryLabel;
+            }
+        }
+
         public string EntryBasicDesc
         {
             get
             {
-                return mEntryBasicDesc;
+                return _EntryBasicDesc;
             }
         }
 
         
         public LoreDrawEntry(string label, string basicDescription)
         {
-            mEntryLabel = label;
-            mEntryBasicDesc = basicDescription;
+            _EntryLabel = label;
+            _EntryBasicDesc = basicDescription;
         }
 
         public float Draw(float x, float y, float width, bool selected, Action<LoreDrawEntry> clickedCallback, Action<LoreDrawEntry> mousedOverCallback, Vector2 scrollPosition, Rect scrollOutRect)
@@ -38,7 +46,7 @@ namespace ImmersiveResearch
                     Widgets.DrawHighlight(rect1);
                 Rect rect2 = rect1;
                 rect2.width -= width1;
-                Widgets.Label(rect2, mEntryLabel);
+                Widgets.Label(rect2, _EntryLabel);
 
                 // this 3rd rect is used for entry specific statistics like percentages and in game values.
                 /*Rect rect3 = rect1;

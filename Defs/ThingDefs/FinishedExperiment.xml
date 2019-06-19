@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+
+  <ThingDef ParentName="UnfinishedBase">
+    <defName>UnfinishedExperiment</defName>
+    <label>unfinished experiment</label>
+    <graphicData>
+      <texPath>Things/Item/Unfinished/UnfinishedComponent</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stuffCategories Inherit="false">
+      <li>Fabric</li>
+      <li>Leathery</li>
+      <li>Stony</li>
+      <li>Woody</li>
+      <li>Metallic</li>
+    </stuffCategories>
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>FinishedExperiment</defName>
+    <label>Finished Experiment</label>
+    <description>A finished experiment project.</description>
+    <thingClass>ImmersiveResearch.Thing_FinishedExperiment</thingClass>
+    <drawGUIOverlay>false</drawGUIOverlay>
+    <graphicData>
+      <texPath>Things/Item/Unfinished/UnfinishedComponent</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+    </graphicData>
+    <statBases>
+      <Mass>0.5</Mass>
+    </statBases>
+    <tradeNeverStack>true</tradeNeverStack>
+    <resourceReadoutPriority>Middle</resourceReadoutPriority>
+    <stackLimit>1</stackLimit>
+    <useHitPoints>true</useHitPoints>
+    <modExtensions>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+        </researchTypes>
+      </li>
+    </modExtensions>
+  </ThingDef>
+</Defs>

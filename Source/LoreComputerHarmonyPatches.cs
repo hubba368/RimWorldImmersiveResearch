@@ -14,26 +14,103 @@ using UnityEngine;
 
 namespace ImmersiveResearch
 {
-    // Rimworld is built in .Net3.5 which does not have Tuples
-    public class Tuple<T1, T2>
+    public enum ResearchTypes
     {
-        public T1 Item1 { get; private set; }
-        public T2 Item2 { get; private set; }
+        None,
+        Biological,
+        Mechanical,
+        Construction,
+        Metallurgy,
+        Carpentry,
+        Weaponry,
+        Apparel,
+        Masonry,
+        Electrical,
+        Medical,
+        Spacecraft,
+        Advanced,
+        Spacer
+    }
 
-        internal Tuple(T1 item1, T2 item2)
-        {
-            Item1 = item1;
-            Item2 = item2;
-        }
-    }
-    public static class Tuple
+
+    public class ImmersiveResearchProject
     {
-        public static Tuple<T1, T2> New<T1, T2>(T1 Item1, T2 Item2)
+        ResearchProjectDef _projectDef;
+        bool _isDiscovered;
+        float _weighting;
+        List<ResearchTypes> _researchTypes;
+
+        public ResearchProjectDef ProjectDef
         {
-            var tuple = new Tuple<T1, T2>(Item1, Item2);
-            return tuple;
+            get
+            {
+                return _projectDef;
+            }
+            set
+            {
+                _projectDef = value;
+            }
+        }
+
+        public bool IsDiscovered
+        {
+            get
+            {
+                return _isDiscovered;
+            }
+            set
+            {
+                _isDiscovered = value;
+            }
+        }
+
+        public float Weighting
+        {
+            get
+            {
+                return _weighting;
+            }
+            set
+            {
+                _weighting = value;
+            }
+        }
+
+        public List<ResearchTypes> ResearchTypes
+        {
+            get
+            {
+                return _researchTypes;
+            }
+            set
+            {
+                _researchTypes = value;
+            }
+        }
+
+        public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight, List<ResearchTypes> rTypes)
+        {
+            _projectDef = projDef;
+            _isDiscovered = discovered;
+            _weighting = weight;
+            _researchTypes = rTypes;
+        }
+
+        public ImmersiveResearchProject(bool discovered, float weight, List<ResearchTypes> rTypes)
+        {
+            _isDiscovered = discovered;
+            _weighting = weight;
+            _researchTypes = rTypes;
+        }
+
+        public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight)
+        {
+            _projectDef = projDef;
+            _isDiscovered = discovered;
+            _weighting = weight;
         }
     }
+
 
 
 
@@ -49,21 +126,19 @@ namespace ImmersiveResearch
         private static float _medievalProbability = 20.0f;
         private static float _industrialProbability = 10.0f;
         private static float _spacerProbability = 5.0f;
-        private static float _rareDatadiskProbability = 20.0f;
+        private static float _rareDatadiskProbability = 50.0f;
         private static float _superRareDatadiskProbability = 5.0f;
-
-        private static string _currentSaveName = "";
 
         public static List<ResearchProjectDef> TempResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
 
-        public static Dictionary<string, Tuple<bool, float>> UndiscoveredResearchList = new Dictionary<string, Tuple<bool, float>>();                  // dictionary of all possible research options, with respective 'discovered' flags and weightings.
-
+        public static ResearchDict UndiscoveredResearchList;
+        
+        
         public static Dictionary<int, string> DatadiskUniqueDescriptions = new Dictionary<int, string>();                                              // dictionary of in game datadisks unique IDs that point to randomly chosen descriptions.
 
         static LoreComputerHarmonyPatches()
-        {
-            
-            var harmony = HarmonyInstance.Create("rimworld.mods.lorefriendlywiki");
+        {          
+            var harmony = HarmonyInstance.Create("rimworld.mods.immersiveresearch");
 
             // new game initialisation
             MethodInfo NewGameResearchTargetMethod = AccessTools.Method(typeof(GameComponentUtility), "StartedNewGame");
@@ -76,24 +151,6 @@ namespace ImmersiveResearch
             HarmonyMethod LoadGameResearchPatchMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("LoadGameInit"));
 
             harmony.Patch(LoadGameResearchTargetMethod, null, LoadGameResearchPatchMethod);
-
-            // Save game patch
-            MethodInfo SaveGameTargetMethod = AccessTools.Method(typeof(SafeSaver), "Save");
-            HarmonyMethod SaveGamePatchMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("SaveGameUtility"));
-
-            harmony.Patch(SaveGameTargetMethod, null, SaveGamePatchMethod);
-
-            //save game name grab
-            MethodInfo SaveNameTargetMethod = AccessTools.Method(typeof(GameDataSaveLoader), "SaveGame");
-            HarmonyMethod SaveNamePatchMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("GetSelectedSaveName"));
-
-            harmony.Patch(SaveNameTargetMethod, SaveNamePatchMethod, null);
-
-            // load game name grab
-            MethodInfo LoadNameTargetMethod = AccessTools.Method(typeof(SavedGameLoaderNow), "LoadGameFromSaveFileNow");
-            HarmonyMethod LoadNamePatchMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("GetSelectedSaveName"));
-
-            harmony.Patch(LoadNameTargetMethod, LoadNamePatchMethod, null);
 
             // Lore Database float menu
             MethodInfo targetMethod = AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders");
@@ -109,7 +166,7 @@ namespace ImmersiveResearch
 
             // datadisk on ship trader stock
             MethodInfo miscStockTargetMethod = AccessTools.Method(typeof(TradeShip), "GenerateThings");
-            HarmonyMethod miscStockPostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDatadiskToStock"));
+            HarmonyMethod miscStockPostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToStock"));
 
             harmony.Patch(miscStockTargetMethod, null, miscStockPostfixMethod);
 
@@ -135,7 +192,6 @@ namespace ImmersiveResearch
             // update research lists if using debug buttons
             harmony.Patch(AccessTools.Method(typeof(ResearchManager), "DebugSetAllProjectsFinished"), null,
                 new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddResearchToListIfDebugMode")));
-
 
             //unused methods for now 
 
@@ -168,21 +224,46 @@ namespace ImmersiveResearch
         // Initialise our undiscovered research list and remove undiscovereds from the main list.
         public static void NewGameInit()
         {
-            UndiscoveredResearchList.Clear();
+            UndiscoveredResearchList = Current.Game.GetComponent<GameComponent_ImmersiveResearch>().MainResearchDict;
+
+            UndiscoveredResearchList.MainResearchDict.Clear();
             foreach (ResearchProjectDef proj in TempResearchList)
             {
-                //if(proj.defName == "BlindResearch") { continue; }
+                if(UndiscoveredResearchList.MainResearchDict.ContainsKey(proj.defName))
+                {
+                    continue;
+                }
                 if (proj.IsFinished)
                 {
-                    UndiscoveredResearchList.Add(proj.defName, new Tuple<bool, float>(true, 0.0f));
+                    if (proj.HasModExtension<ResearchDefModExtension>())
+                    {
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes));
+                    }
+                    else
+                    {
+                        List<ResearchTypes> list = new List<ResearchTypes>();
+                        list.Add(ResearchTypes.None);
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, list));
+                    }
                 }
                 else
                 {
-                    UndiscoveredResearchList.Add(proj.defName, new Tuple<bool, float>(false, 0.0f));
+                    if (proj.HasModExtension<ResearchDefModExtension>())
+                    {
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes));
+                    }
+                    else
+                    {
+                        List<ResearchTypes> list = new List<ResearchTypes>();
+                        list.Add(ResearchTypes.None);
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, list));
+                    }
+
                 }
             }
             EmptyResearchGraphOfUndiscovered(DefDatabase<ResearchProjectDef>.AllDefsListForReading);
             GenerateAllResearchWeightings();
+
         }
 
 
@@ -190,37 +271,24 @@ namespace ImmersiveResearch
         // Load our undiscovered research list from file and remove undiscovereds from the main list.
         public static void LoadGameInit()
         {
-            UndiscoveredResearchList.Clear();
+            UndiscoveredResearchList = Current.Game.GetComponent<GameComponent_ImmersiveResearch>().MainResearchDict;
+            //loading r Types here until i can figure out a scribing workaround for nested lists
 
-            //afaik rimworld save names can never be duplicate as entering the same save name as another save just overrides the existing one
-            // so we should not need to check for duplicate xml files cause there theoretically should never BE any duplicated files
-            // load research projects that are fully completed.
-            // and reload previous undiscovered research data
-            Dictionary<string, bool> tempDict = LoadResearchDetailsFromFile(_currentSaveName);
-
-            if(tempDict == null)
+            foreach (ResearchProjectDef proj in TempResearchList)
             {
-                Log.Error("something went wrong with research details retrieval. Defaulting to vanilla research graph.");
-                foreach (ResearchProjectDef proj in TempResearchList)
+                if (proj.HasModExtension<ResearchDefModExtension>())
                 {
-                    UndiscoveredResearchList.Add(proj.defName, new Tuple<bool, float>(true, 0.0f));
-                }
-                return;
-            }
-
-            // get dicovered but uncompleted
-            for(int i = 0; i < tempDict.Count(); i++)
-            {
-                if (tempDict.ElementAt(i).Value == true)
-                {
-                    UndiscoveredResearchList.Add(tempDict.ElementAt(i).Key, new Tuple<bool, float>(true, 0.0f));
+                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = proj.GetModExtension<ResearchDefModExtension>().researchTypes;
                 }
                 else
                 {
-                    UndiscoveredResearchList.Add(tempDict.ElementAt(i).Key, new Tuple<bool, float>(false, 0.0f));
+
+                    List<ResearchTypes> temp = new List<ResearchTypes>();
+                    temp.Add(ResearchTypes.None);
+                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = new List<ResearchTypes>(temp);
                 }
             }
-            // could also do with saving weightings ( wouldnt need to unless weightings became more randomised)
+
             EmptyResearchGraphOfUndiscovered(DefDatabase<ResearchProjectDef>.AllDefsListForReading);
             GenerateAllResearchWeightings();
         }
@@ -228,98 +296,18 @@ namespace ImmersiveResearch
 
         #region UTIL FUNCTIONS
 
-        private static Dictionary<string, bool> LoadResearchDetailsFromFile(string saveName)
-        {
-            XDocument temp = null;
-            try
-            {
-                temp = XDocument.Load(GetModFilePath()  + @"\\" + saveName + "ResearchDetails.xml");
-            }
-            catch
-            {
-                Log.Error("could not find research details file for this save file. Defaulting...");
-                return null;
-            }
-            
-            var rootNodes = temp.Root.DescendantsAndSelf("ResearchDetails").Elements();
-            
-            var researchProjs = rootNodes.ToDictionary(n => n.Name.ToString(), n => n.Value);
-            Dictionary<string, bool> newDict = new Dictionary<string, bool>();
-
-            // have to convert from xml boolean to C# version
-            foreach (var item in researchProjs)
-            {
-                char c = char.ToUpper(item.Value[0]);
-                item.Value.Replace(item.Value[0], c);
-                newDict.Add(item.Key, Convert.ToBoolean(item.Value));
-            }
-
-            return newDict;
-        }
-
-        // prefix patch of 'SaveGame'.
-        public static void GetSelectedSaveName(ref string fileName)
-        {
-            _currentSaveName = fileName;
-        }
-
-        // prefix patch of 'Save'.
-        public static void SaveGameUtility()
-        {
-            SaveResearchDetailsToFile();
-            SaveDiskDescriptionsToFile();
-        }
-
-        
-        private static void SaveResearchDetailsToFile()
-        {
-            Dictionary<string, bool> savFileDict = new Dictionary<string, bool>();
-            for (int i = 0; i < UndiscoveredResearchList.Count(); i++)
-            {
-                savFileDict.Add(UndiscoveredResearchList.ElementAt(i).Key, UndiscoveredResearchList.ElementAt(i).Value.Item1);
-            }
-         
-            XElement saveFileName = new XElement("SaveName", _currentSaveName);
-            XElement researchDetails = new XElement("ResearchDetails", from keyValue in savFileDict select new XElement(keyValue.Key.Replace(" ", string.Empty), keyValue.Value));
-
-            XDocument root = new XDocument(new XElement("root", saveFileName, researchDetails));
-
-            root.Save(GetModFilePath() + @"\\" + _currentSaveName + "ResearchDetails.xml");
-        }
-
-
-        private static void SaveDiskDescriptionsToFile()
-        {
-            if(DatadiskUniqueDescriptions.Count() <= 0)
-            {
-                return;
-            }
-
-            Dictionary<int, string> descriptionDict = new Dictionary<int, string>();
-            for (int i = 0; i < DatadiskUniqueDescriptions.Count(); i++)
-            {
-                descriptionDict.Add(DatadiskUniqueDescriptions.ElementAt(i).Key, DatadiskUniqueDescriptions.ElementAt(i).Value);
-            }
-
-            XElement saveFileName = new XElement("SaveName", _currentSaveName);
-            XElement descriptionDetails = new XElement("DescriptionDetails", from keyValue in descriptionDict select new XElement("T" + keyValue.Key.ToString(), keyValue.Value));
-
-            XDocument root = new XDocument(new XElement("root", saveFileName, descriptionDetails));
-
-            descriptionDetails.Save(GetModFilePath() + @"\\" + _currentSaveName + "DescriptionDetails.xml");
-        }
 
         // patches the 'Complete all research' debug mode button.
         public static void AddResearchToListIfDebugMode()
         {
-            for(int i = 0; i < UndiscoveredResearchList.Count(); i++)
+            for(int i = 0; i < UndiscoveredResearchList.MainResearchDict.Count(); i++)
             {
-                if(UndiscoveredResearchList.ElementAt(i).Value.Item1 == false)
+                if(UndiscoveredResearchList.MainResearchDict.ElementAt(i).Value.IsDiscovered == false)
                 {
-                    AddNewResearch(UndiscoveredResearchList.ElementAt(i).Key);
+                    AddNewResearch(UndiscoveredResearchList.MainResearchDict.ElementAt(i).Key);
                     for(int j = 0; j < TempResearchList.Count(); j++)
                     {
-                        if(TempResearchList[j].label == UndiscoveredResearchList.ElementAt(i).Key)
+                        if(TempResearchList[j].label == UndiscoveredResearchList.MainResearchDict.ElementAt(i).Key)
                         {
                             Find.ResearchManager.FinishProject(TempResearchList[j]);
                         }
@@ -355,6 +343,7 @@ namespace ImmersiveResearch
         {
             if (!thing.DestroyedOrNull())
             {
+                //Log.Error("thing ID: " + thing.thingIDNumber);
                 if (thing.def.defName == "UselessDatadisk" || thing.def.defName == "ValuableDatadisk")
                 {
                     if(DatadiskUniqueDescriptions.ContainsKey(thing.thingIDNumber-2))
@@ -381,9 +370,9 @@ namespace ImmersiveResearch
             {
                 return CreateDataDiskThing("ValuableDatadisk");
             }
-            else if(threshold <= _rareDatadiskProbability && threshold > _superRareDatadiskProbability)
+            else if (threshold <= _rareDatadiskProbability && threshold > _superRareDatadiskProbability)
             {
-                CreateDataDiskThing("ResearchDatadisk");
+                return CreateDataDiskThing("ResearchDatadisk");
             }
 
             return CreateDataDiskThing("UselessDatadisk");
@@ -479,7 +468,7 @@ namespace ImmersiveResearch
         {
             if (__instance.def.race.FleshType == FleshTypeDefOf.Mechanoid)
             {
-                __instance.def.butcherProducts.Add(new ThingDefCountClass(CreateDataDiskThing("EncryptedDatadisk").def, 1));
+                __instance.def.butcherProducts.Add(new ThingDefCountClass(CreateDataDiskThing("LockedDatadisk").def, 1));
             }
         }
 
@@ -487,19 +476,19 @@ namespace ImmersiveResearch
         public static void AddDatadiskToStock(TradeShip __instance)
         {
             // not sure if we need to edit ship stocks as they are auto added to stocks via XML tags
-            __instance.Goods.Add<Thing>(CreateDataDiskThing("EncryptedDatadisk"));
+            __instance.Goods.Add<Thing>(CreateDataDiskThing("LockedDatadisk"));
         }
 
         // postfix patch of Bandit camp reward generation
         public static void AddDataDiskToBanditQuestReward(List<Thing> __result)
         {
-            __result.Add(CreateDataDiskThing("EncryptedDatadisk"));
+            __result.Add(CreateDataDiskThing("LockedDatadisk"));
         }
 
         
         public static void AddDataDiskToDropPodEvent(ref IEnumerable<Thing> things)
         {
-            things.Add(CreateDataDiskThing("EncryptedDatadisk"));
+            things.Add(CreateDataDiskThing("LockedDatadisk"));
         }
 
         #endregion
@@ -509,18 +498,18 @@ namespace ImmersiveResearch
 
         private static void GenerateAllResearchWeightings()
         {
-            var undiscoveredResearch = UndiscoveredResearchList.Where(item => item.Value.Item1 == false);
+            var undiscoveredResearch = UndiscoveredResearchList.MainResearchDict.Where(item => item.Value.IsDiscovered == false);
 
-            List<string> tempList = UndiscoveredResearchList.Keys.ToList();
+            List<string> tempList = UndiscoveredResearchList.MainResearchDict.Keys.ToList();
             // you can't make changes to a dict that you are iterating over
             for (int i = 0; i < tempList.Count; ++i)
             {
-                var temp = TempResearchList.Where(item => item.defName == UndiscoveredResearchList.ElementAt(i).Key);
+                var temp = TempResearchList.Where(item => item.defName == UndiscoveredResearchList.MainResearchDict.ElementAt(i).Key);
                 foreach (ResearchProjectDef currentProj in temp)
                 {
                     float weight = GenerateUniqueResearchWeighting(currentProj);
-                    Tuple<bool, float> newValues = new Tuple<bool, float>(UndiscoveredResearchList[currentProj.defName].Item1, weight);
-                    UndiscoveredResearchList[currentProj.defName] = newValues;
+                    ImmersiveResearchProject newValues = new ImmersiveResearchProject(currentProj, UndiscoveredResearchList.MainResearchDict[currentProj.defName].IsDiscovered, weight, UndiscoveredResearchList.MainResearchDict[currentProj.defName].ResearchTypes);
+                    UndiscoveredResearchList.MainResearchDict[currentProj.defName] = newValues;
                 }
             }
         }
@@ -530,16 +519,19 @@ namespace ImmersiveResearch
         {
             float projWeighting = 0.0f;
 
-            if(UndiscoveredResearchList[proj.defName].Item1 == true) { return projWeighting; }
+            if(UndiscoveredResearchList.MainResearchDict[proj.defName].IsDiscovered == true) { return projWeighting; }
 
             // give higher chance of selection for research lines that are more completed
             if (!proj.prerequisites.NullOrEmpty())
             {
                 for (int i = 0; i < proj.prerequisites.Count; ++i)
                 {
-                    if (UndiscoveredResearchList[proj.prerequisites[i].defName].Item1 == true)
+                    if (proj.prerequisites[i].IsFinished)
                     {
-                        projWeighting += 5.0f;
+                        if (UndiscoveredResearchList.MainResearchDict[proj.prerequisites[i].defName].IsDiscovered == true)
+                        {
+                            projWeighting += 5.0f;
+                        }
                     }
                 }
             }
@@ -570,22 +562,22 @@ namespace ImmersiveResearch
         {
             float totalWeighting = 0f;
             float finalTotal = 0f;
-            Log.Error("selecting");
-            foreach (var temp in UndiscoveredResearchList)
+
+            foreach (var temp in UndiscoveredResearchList.MainResearchDict)
             {
-                totalWeighting += temp.Value.Item2;
+                totalWeighting += temp.Value.Weighting;
             }
 
             float randVal = Rand.Range(0, totalWeighting);
 
-            for (int index = 0; index < UndiscoveredResearchList.Count; ++index)
+            for (int index = 0; index < UndiscoveredResearchList.MainResearchDict.Count; ++index)
             {
-                finalTotal += UndiscoveredResearchList.ElementAt(index).Value.Item2;
+                finalTotal += UndiscoveredResearchList.MainResearchDict.ElementAt(index).Value.Weighting;
                 if (finalTotal > randVal)
                 {
                     //Log.Error("Final Weighting " + finalTotal.ToString());
                     //Log.Error("Research Selected " + UndiscoveredResearchList.ElementAt(index).Key);
-                    AddNewResearch(UndiscoveredResearchList.ElementAt(index).Key);
+                    AddNewResearch(UndiscoveredResearchList.MainResearchDict.ElementAt(index).Key);
                     break;
                 }
             }
@@ -618,7 +610,12 @@ namespace ImmersiveResearch
             if (researchDatabaseRef.Count() < TempResearchList.Count())
             {
                 EmptyResearchGraphOfUndiscovered(researchDatabaseRef);
-            }          
+            }
+            else
+            {
+                Log.Error("Research Graph is Full/Something is broken.");
+                Log.Error(researchDatabaseRef.Count.ToString());
+            }
         }
 
 
@@ -629,7 +626,7 @@ namespace ImmersiveResearch
             {
                 ResearchProjectDef researchProjectDef = Rlist[index];
 
-                if (UndiscoveredResearchList.ContainsKey(Rlist[index].defName) && UndiscoveredResearchList[Rlist[index].defName].Item1 == false)
+                if (UndiscoveredResearchList.MainResearchDict.ContainsKey(Rlist[index].defName) && UndiscoveredResearchList.MainResearchDict[Rlist[index].defName].IsDiscovered == false)
                 {
                     //Log.Error("remving from list");
                     Rlist.RemoveAt(index);
@@ -702,8 +699,8 @@ namespace ImmersiveResearch
             }
 
             // set the newly discovered research to 'discovered'
-            Tuple<bool, float> newValues = new Tuple<bool, float>(true, UndiscoveredResearchList[researchName].Item2);
-            UndiscoveredResearchList[researchName] = newValues;
+            ImmersiveResearchProject newValues = new ImmersiveResearchProject(UndiscoveredResearchList.MainResearchDict[researchName].ProjectDef, true, UndiscoveredResearchList.MainResearchDict[researchName].Weighting, UndiscoveredResearchList.MainResearchDict[researchName].ResearchTypes);
+            UndiscoveredResearchList.MainResearchDict[researchName] = newValues;
 
             //Log.Error("Is new research discovered: " + UndiscoveredResearchList[researchName].Item1.ToString(), false);
         }
@@ -746,9 +743,9 @@ namespace ImmersiveResearch
                     {
                         int maxNumOfResearches = TempResearchList.Count();
                         int counter = 1;
-                        for (int i = 0; i < UndiscoveredResearchList.Count(); i++)
+                        for (int i = 0; i < UndiscoveredResearchList.MainResearchDict.Count(); i++)
                         {
-                            if(UndiscoveredResearchList.ElementAt(i).Value.Item1 == true)
+                            if(UndiscoveredResearchList.MainResearchDict.ElementAt(i).Value.IsDiscovered == true)
                             {
                                 counter++;
                             }

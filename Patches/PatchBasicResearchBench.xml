@@ -16,23 +16,12 @@
       </li>
     </value>
   </Operation>
-  <Operation Class="PatchOperationReplace">
-    <xpath>/Defs/ThingDef[defName="HiTechResearchBench"]/comps</xpath>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="HiTechResearchBench"]/comps/li[3]/linkableFacilities</xpath>
     <value>
-    <comps>
-      <li Class="CompProperties_Power">
-        <compClass>CompPowerTrader</compClass>
-        <basePowerConsumption>250</basePowerConsumption>
-        <shortCircuitInRain>true</shortCircuitInRain>
-      </li>
-      <li Class="CompProperties_Flickable"/>
-      <li Class="CompProperties_AffectedByFacilities">
-        <linkableFacilities>
-	  <li>TestComputerObj</li>
-          <li>MultiAnalyzer</li>
-        </linkableFacilities>
-      </li>
-    </comps>
+      <li>TestComputerObj</li>
     </value>
   </Operation>
 </Patch>
+
+

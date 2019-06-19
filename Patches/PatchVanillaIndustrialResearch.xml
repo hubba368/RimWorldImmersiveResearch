@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Electricity"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Batteries"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="BiofuelRefining"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="WatermillGenerator"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Mechanical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="NutrientPaste"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SolarPanels"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="AirConditioning"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Electrical</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="Autodoors"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Electrical</li>
+            <li>Construction</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="Hydroponics"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Biological</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="TubeTelevision"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Electrical</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="PackagedSurvivalMeal"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Biological</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+  
+    <Operation Class="PatchOperationAddModExtension">
+      <xpath>/Defs/ResearchProjectDef[defName="Firefoam"]</xpath>
+      <value>
+        <li Class="ImmersiveResearch.ResearchDefModExtension">
+          <researchTypes>
+            <li>Electrical</li>
+            <li>Mechanical</li>
+          </researchTypes>
+        </li>
+      </value>
+    </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="IEDs"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GeothermalPower"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SterileMaterials"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Medical</li>
+          <li>Construction</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Machining"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Metallurgy</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SmokepopBelt"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Mechanical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Prosthetics"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Medical</li>
+          <li>Mechanical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Gunsmithing"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="FlakArmor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Mortars"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="BlowbackOperation"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="FlakArmor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GasOperation"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GunTurrets"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MicroelectronicsBasics"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Construction</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="FlatscreenTelevision"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ColoredLights"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Electrical</li>
+          <li>Advanced</li>
+          <li>Construction</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MoisturePump"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Biological</li>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="HospitalBed"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Medical</li>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="TransportPod"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MedicineProduction"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Medical</li>
+          <li>Biological</li>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="LongRangeMineralScanner"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ShieldBelt"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GunTurrets"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PrecisionRifling"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="HeavyTurrets"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MultibarrelWeapons"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Weaponry</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MultiAnalyzer"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GroundPenetratingScanner"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Mechanical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="DeepDrilling"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Electrical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="VitalsMonitor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Medical</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Fabrication"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Advanced</li>
+          <li>Construction</li>
+        </researchTypes>
+      </li>
+    </value>
+  </Operation>
+</Patch>

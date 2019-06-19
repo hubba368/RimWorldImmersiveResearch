@@ -11,33 +11,43 @@ namespace ImmersiveResearch
     /// <summary>
     ///  Custom implementation of RimWorld class 'StatsReportUtility'.
     /// </summary>
-    public static class LoreWindowDrawingUtility
+    public class LoreWindowDrawingUtility
     {
         //UNUSED
-        private static Vector2 _scrollPosition;
-        private static float _listHeight;
-        private static List<LoreDrawEntry> _cachedDrawEntries = new List<LoreDrawEntry>();
-        private static LoreDrawEntry _selectedEntry;
-        private static LoreDrawEntry _mousedOverEntry;
+        private Vector2 _scrollPosition;
+        private float _listHeight;
+        private List<LoreDrawEntry> _cachedDrawEntries = new List<LoreDrawEntry>();
+        private LoreDrawEntry _selectedEntry;
+        private LoreDrawEntry _mousedOverEntry;
         
-        // fill up cachedEntries list with our Things
-        public static void DrawLoreFullList(Rect inRect, IEnumerable<PawnKindDef> thingList)
+
+        public LoreDrawEntry SelectedEntry
         {
-            if (LoreWindowDrawingUtility._cachedDrawEntries.NullOrEmpty<LoreDrawEntry>())
+            get
             {
-                foreach(PawnKindDef pawn in thingList)
+                return _selectedEntry;
+            }
+        }
+
+        // fill up cachedEntries list with our Things
+        public void DrawLoreFullList(Rect inRect, List<string> thingList)
+        {
+            if (_cachedDrawEntries.NullOrEmpty<LoreDrawEntry>())
+            {
+                foreach(string pawn in thingList)
                 {
-                    string label = pawn.label;
-                    string desc = "This is a " + label + " entity.";
+                    string label = pawn;
+                    string desc = "";
                     LoreDrawEntry newEntry = new LoreDrawEntry(label, desc);
-                    LoreWindowDrawingUtility._cachedDrawEntries.Add(newEntry);
+                    _cachedDrawEntries.Add(newEntry);
                 }
             }
             DrawLoreListWorker(inRect);
         }
 
         // Draw our list to the UI
-        private static void DrawLoreListWorker(Rect refRect)
+        // mostly just ripped from original source code, jsut changed in a few areas for my needs
+        private void DrawLoreListWorker(Rect refRect)
         {
             Rect rect1 = new Rect(refRect);
             rect1.width *= 0.5f;
@@ -51,16 +61,16 @@ namespace ImmersiveResearch
             string entryName = (string)null;
             _mousedOverEntry = (LoreDrawEntry)null;
 
-            for(int index = 0; index < LoreWindowDrawingUtility._cachedDrawEntries.Count; ++index)
+            for(int index = 0; index < _cachedDrawEntries.Count; ++index)
             {
                 Action<LoreDrawEntry> mouseClickEvent = MouseClickCallBackEvent;
                 Action<LoreDrawEntry> mouseOverEvent = MouseOverCallBackEvent;
 
-                curY += LoreWindowDrawingUtility._cachedDrawEntries[index].Draw(8f, curY, viewRect.width - 8f,
-                   false, mouseClickEvent, mouseOverEvent, LoreWindowDrawingUtility._scrollPosition, rect1);
+                curY += _cachedDrawEntries[index].Draw(8f, curY, viewRect.width - 8f,
+                   false, mouseClickEvent, mouseOverEvent, _scrollPosition, rect1);
             }
 
-            LoreWindowDrawingUtility._listHeight = curY + 100f;
+            _listHeight = curY + 100f;
             Widgets.EndScrollView();
             Rect rect3 = rect2.ContractedBy(10f);
             GUI.BeginGroup(rect3);
@@ -75,10 +85,9 @@ namespace ImmersiveResearch
         }
 
 
-        private static void SelectEntry(LoreDrawEntry entry, bool playSound = true)
+        private void SelectEntry(LoreDrawEntry entry, bool playSound = true)
         {
-            Log.Error("attempting click", false);
-            LoreWindowDrawingUtility._selectedEntry = entry;
+            _selectedEntry = entry;
             if (!playSound)
             {
                 return;
@@ -91,14 +100,14 @@ namespace ImmersiveResearch
 
 
         // Mouse events 
-        private static void MouseClickCallBackEvent(LoreDrawEntry r)
+        private void MouseClickCallBackEvent(LoreDrawEntry r)
         {
             SelectEntry(r, true);
         }
 
-        private static void MouseOverCallBackEvent(LoreDrawEntry r)
+        private void MouseOverCallBackEvent(LoreDrawEntry r)
         {
-            LoreWindowDrawingUtility._mousedOverEntry = r;
+            _mousedOverEntry = r;
         }
     }
 }
