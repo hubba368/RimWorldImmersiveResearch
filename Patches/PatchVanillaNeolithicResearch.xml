@@ -7,6 +7,9 @@
       <researchTypes>
         <li>Biological</li>
       </researchTypes>
+      <ResearchSize>
+        Small
+      </ResearchSize>
     </li>
   </value>
 </Operation>
@@ -18,6 +21,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -29,6 +35,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -40,6 +49,9 @@
         <researchTypes>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -51,6 +63,9 @@
         <researchTypes>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -61,7 +76,11 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Masonry</li>
+          <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -73,6 +92,9 @@
         <researchTypes>
           <li>Apparel</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -84,6 +106,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -95,6 +120,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -106,6 +134,9 @@
         <researchTypes>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -117,6 +148,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -128,6 +162,9 @@
         <researchTypes>
           <li>Metallurgy</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -138,8 +175,11 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Carpentry</li>
-	  <li>Weaponry</li>
+	        <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -152,6 +192,9 @@
           <li>Biological</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -164,6 +207,9 @@
           <li>Biological</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -176,6 +222,9 @@
           <li>Biological</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -188,6 +237,9 @@
           <li>Biological</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -200,6 +252,9 @@
           <li>Biological</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -210,8 +265,11 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Metallurgy</li>
-	  <li>Weaponry</li>
+	        <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -222,8 +280,11 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Metallurgy</li>
-	  <li>Weaponry</li>
+	        <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -234,8 +295,11 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Carpentry</li>
-	  <li>Weaponry</li>
+	        <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>

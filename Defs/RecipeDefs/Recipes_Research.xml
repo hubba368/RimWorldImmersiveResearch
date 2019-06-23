@@ -1,34 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-  <RecipeDef>
-    <defName>ResearchExperiment</defName>
-    <label>testresearch.</label>
-    <description>testing.</description>
-    <jobString>testing.</jobString>
-    <workAmount>1600</workAmount>
-    <workSpeedStat>SmeltingSpeed</workSpeedStat>
-    <effectWorking>Smelt</effectWorking>
-    <soundWorking>Recipe_Smelt</soundWorking>
-    <ingredients>
-      <li>
-        <filter>
-          <thingDefs>
-            <li>ChunkSlagSteel</li>
-          </thingDefs>
-        </filter>
-        <count>1</count>
-      </li>
-    </ingredients>
-    <products>
-      <Steel>20</Steel>
-    </products>
-    <fixedIngredientFilter>
-      <thingDefs>
-        <li>ChunkSlagSteel</li>
-      </thingDefs>
-    </fixedIngredientFilter>
-  </RecipeDef>
-
+<!--COSTS BASED ON INDUSTRIAL TECH LEVEL
+    Will probs need to start checking proj pre reqs during selection
+    800 and below = small
+    800 to 2k = medium
+    2k and above = large-->
   <RecipeDef>
     <defName>SmallMechanicalResearch</defName>
     <label>small mechanical research project</label>
@@ -62,9 +38,51 @@
         <researchTypes>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </modExtensions>
   </RecipeDef>
 
+  <RecipeDef>
+    <defName>MediumMechanicalResearch</defName>
+    <label>Medium mechanical research project</label>
+    <description>A medium-sized research project based on various mechanical fields. Will help advance the colony's knowledge on mechanical subjects.</description>
+    <jobString>Performing mechanical experiment.</jobString>
+    <workAmount>1000</workAmount>
+    <workSpeedStat>ResearchSpeed</workSpeedStat>
+    <effectWorking>Smelt</effectWorking>
+    <soundWorking>Recipe_Smelt</soundWorking>
+    <unfinishedThingDef>UnfinishedExperiment</unfinishedThingDef>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>Steel</li>
+          </thingDefs>
+        </filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <products>
+      <FinishedExperiment>1</FinishedExperiment>
+    </products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Steel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <modExtensions>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+        </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
+      </li>
+    </modExtensions>
+  </RecipeDef>
 </Defs>
 

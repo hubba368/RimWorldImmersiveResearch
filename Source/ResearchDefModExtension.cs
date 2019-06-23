@@ -9,5 +9,7 @@ namespace ImmersiveResearch
     public class ResearchDefModExtension :DefModExtension
     {
         public List<ResearchTypes> researchTypes = new List<ResearchTypes>();
+
+        public ResearchSizes ResearchSize;
     }
 }

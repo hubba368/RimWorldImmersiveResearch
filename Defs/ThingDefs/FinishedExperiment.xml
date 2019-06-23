@@ -21,7 +21,7 @@
   <ThingDef ParentName="ResourceBase">
     <defName>FinishedExperiment</defName>
     <label>Finished Experiment</label>
-    <description>A finished experiment project.</description>
+    <description>A finished experiment project. You can safely sell these.</description>
     <thingClass>ImmersiveResearch.Thing_FinishedExperiment</thingClass>
     <drawGUIOverlay>false</drawGUIOverlay>
     <graphicData>
@@ -34,12 +34,14 @@
     </statBases>
     <tradeNeverStack>true</tradeNeverStack>
     <resourceReadoutPriority>Middle</resourceReadoutPriority>
-    <stackLimit>1</stackLimit>
+    <stackLimit>25</stackLimit>
     <useHitPoints>true</useHitPoints>
     <modExtensions>
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
         </researchTypes>
+        <ResearchSize>        
+        </ResearchSize>
       </li>
     </modExtensions>
   </ThingDef>

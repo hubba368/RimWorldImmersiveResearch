@@ -32,6 +32,13 @@ namespace ImmersiveResearch
         Spacer
     }
 
+    public enum ResearchSizes
+    {
+        Small,
+        Medium,
+        Large,
+        Essential
+    }
 
     public class ImmersiveResearchProject
     {
@@ -39,6 +46,7 @@ namespace ImmersiveResearch
         bool _isDiscovered;
         float _weighting;
         List<ResearchTypes> _researchTypes;
+        ResearchSizes _researchSize;
 
         public ResearchProjectDef ProjectDef
         {
@@ -88,19 +96,23 @@ namespace ImmersiveResearch
             }
         }
 
-        public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight, List<ResearchTypes> rTypes)
+        public ResearchSizes ResearchSize { get; set; }
+
+        public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight, List<ResearchTypes> rTypes, ResearchSizes rSize)
         {
             _projectDef = projDef;
             _isDiscovered = discovered;
             _weighting = weight;
             _researchTypes = rTypes;
+            _researchSize = rSize;
         }
 
-        public ImmersiveResearchProject(bool discovered, float weight, List<ResearchTypes> rTypes)
+        public ImmersiveResearchProject(bool discovered, float weight, List<ResearchTypes> rTypes, ResearchSizes rSize)
         {
             _isDiscovered = discovered;
             _weighting = weight;
             _researchTypes = rTypes;
+            _researchSize = rSize;
         }
 
         public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight)
@@ -134,7 +146,7 @@ namespace ImmersiveResearch
         public static ResearchDict UndiscoveredResearchList;
         
         
-        public static Dictionary<int, string> DatadiskUniqueDescriptions = new Dictionary<int, string>();                                              // dictionary of in game datadisks unique IDs that point to randomly chosen descriptions.
+        public static Dictionary<int, string> DatadiskUniqueDescriptions = new Dictionary<int, string>(); // dictionary of in game datadisks unique IDs that point to randomly chosen descriptions.
 
         static LoreComputerHarmonyPatches()
         {          
@@ -195,12 +207,6 @@ namespace ImmersiveResearch
 
             //unused methods for now 
 
-            // Blind Research option functionality
-            // MethodInfo researchFinishTargetMethod = AccessTools.Method(typeof(ResearchManager), "FinishProject");
-            // HarmonyMethod researchFinishPrefixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("ApplyBlindResearch"));
-
-            // harmony.Patch(researchFinishTargetMethod, researchFinishPrefixMethod, null);
-
             // research graph Left side of window changing
             //MethodInfo projPrereqTargetMethod = AccessTools.Method(typeof(MainTabWindow_Research), "DrawResearchPrereqs");
             //HarmonyMethod projPreqreqPostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("EditResearchPrereqs"));
@@ -237,32 +243,31 @@ namespace ImmersiveResearch
                 {
                     if (proj.HasModExtension<ResearchDefModExtension>())
                     {
-                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes));
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes, proj.GetModExtension<ResearchDefModExtension>().ResearchSize));
                     }
                     else
                     {
                         List<ResearchTypes> list = new List<ResearchTypes>();
                         list.Add(ResearchTypes.None);
-                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, list));
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, true, 0.0f, list, proj.GetModExtension<ResearchDefModExtension>().ResearchSize));
                     }
                 }
                 else
                 {
                     if (proj.HasModExtension<ResearchDefModExtension>())
                     {
-                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes));
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, proj.GetModExtension<ResearchDefModExtension>().researchTypes, proj.GetModExtension<ResearchDefModExtension>().ResearchSize));
                     }
                     else
                     {
                         List<ResearchTypes> list = new List<ResearchTypes>();
                         list.Add(ResearchTypes.None);
-                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, list));
+                        UndiscoveredResearchList.MainResearchDict.Add(proj.defName, new ImmersiveResearchProject(proj, false, 0.0f, list, proj.GetModExtension<ResearchDefModExtension>().ResearchSize));
                     }
-
                 }
             }
             EmptyResearchGraphOfUndiscovered(DefDatabase<ResearchProjectDef>.AllDefsListForReading);
-            GenerateAllResearchWeightings();
+            GenerateAllBaseResearchWeightings();
 
         }
 
@@ -290,7 +295,7 @@ namespace ImmersiveResearch
             }
 
             EmptyResearchGraphOfUndiscovered(DefDatabase<ResearchProjectDef>.AllDefsListForReading);
-            GenerateAllResearchWeightings();
+            GenerateAllBaseResearchWeightings();
         }
 
 
@@ -495,27 +500,55 @@ namespace ImmersiveResearch
 
         #region RESEARCH GRAPH RELATED FUNCTIONS
 
+        public static void GenerateResearchWeightingsByType(ResearchTypes type, float weightFactor, List<ResearchProjectDef> projs)
+        {          
+            for(int i = 0; i < projs.Count; i++)
+            {
+                UndiscoveredResearchList.MainResearchDict[projs[i].defName].Weighting = weightFactor;
+            }
+        }
 
-        private static void GenerateAllResearchWeightings()
+        public static void SelectResearchByWeightingAndType(List<ResearchProjectDef> projs, Thing_FinishedExperiment ExperimentThingID)
+        {// TODO improve this 
+            // maybe regen old base weightings after selection
+            List<ImmersiveResearchProject> tempList = new List<ImmersiveResearchProject>();
+
+            for(int i = 0; i < projs.Count; i++)
+            {
+                tempList.Add(UndiscoveredResearchList.MainResearchDict[projs[i].defName]);
+            }
+
+            AddNewResearch(SelectResearchByUniformCumulativeProb(tempList));
+
+            if(!ExperimentThingID.DestroyedOrNull())
+            {
+                Thing_FinishedExperiment ExpThing = ExperimentThingID;
+                ExpThing.Destroy();
+            }
+
+        }
+
+        private static void GenerateAllBaseResearchWeightings()
         {
             var undiscoveredResearch = UndiscoveredResearchList.MainResearchDict.Where(item => item.Value.IsDiscovered == false);
 
             List<string> tempList = UndiscoveredResearchList.MainResearchDict.Keys.ToList();
             // you can't make changes to a dict that you are iterating over
+            // todo improve this
             for (int i = 0; i < tempList.Count; ++i)
             {
                 var temp = TempResearchList.Where(item => item.defName == UndiscoveredResearchList.MainResearchDict.ElementAt(i).Key);
                 foreach (ResearchProjectDef currentProj in temp)
                 {
-                    float weight = GenerateUniqueResearchWeighting(currentProj);
-                    ImmersiveResearchProject newValues = new ImmersiveResearchProject(currentProj, UndiscoveredResearchList.MainResearchDict[currentProj.defName].IsDiscovered, weight, UndiscoveredResearchList.MainResearchDict[currentProj.defName].ResearchTypes);
+                    float weight = GenerateBaseResearchWeighting(currentProj);
+                    ImmersiveResearchProject newValues = new ImmersiveResearchProject(currentProj, UndiscoveredResearchList.MainResearchDict[currentProj.defName].IsDiscovered, weight, UndiscoveredResearchList.MainResearchDict[currentProj.defName].ResearchTypes, UndiscoveredResearchList.MainResearchDict[currentProj.defName].ResearchSize);
                     UndiscoveredResearchList.MainResearchDict[currentProj.defName] = newValues;
                 }
             }
         }
 
 
-        private static float GenerateUniqueResearchWeighting(ResearchProjectDef proj)
+        private static float GenerateBaseResearchWeighting(ResearchProjectDef proj)
         {
             float projWeighting = 0.0f;
 
@@ -558,29 +591,32 @@ namespace ImmersiveResearch
         }
 
 
-        public static void SelectResearchByWeighting()
+        public static string SelectResearchByUniformCumulativeProb(List<ImmersiveResearchProject> projs)
         {
+            string result = "";
             float totalWeighting = 0f;
             float finalTotal = 0f;
 
-            foreach (var temp in UndiscoveredResearchList.MainResearchDict)
+            foreach (var temp in projs)
             {
-                totalWeighting += temp.Value.Weighting;
+                totalWeighting += temp.Weighting;
             }
 
             float randVal = Rand.Range(0, totalWeighting);
 
-            for (int index = 0; index < UndiscoveredResearchList.MainResearchDict.Count; ++index)
+            for (int index = 0; index < projs.Count; ++index)
             {
-                finalTotal += UndiscoveredResearchList.MainResearchDict.ElementAt(index).Value.Weighting;
+                finalTotal += projs[index].Weighting;
                 if (finalTotal > randVal)
                 {
                     //Log.Error("Final Weighting " + finalTotal.ToString());
-                    //Log.Error("Research Selected " + UndiscoveredResearchList.ElementAt(index).Key);
-                    AddNewResearch(UndiscoveredResearchList.MainResearchDict.ElementAt(index).Key);
+                    //Log.Error("Research Selected " + projs[index].Key);
+                    result = projs[index].ProjectDef.defName;
                     break;
                 }
             }
+
+            return result;
         }
 
 
@@ -588,7 +624,7 @@ namespace ImmersiveResearch
         {// unused atm
             if(proj.defName == "BlindResearch")
             {
-                SelectResearchByWeighting();
+                //SelectItemByUniformCumulativeProb();
                 proj.baseCost += 500f;
             }
         }
@@ -596,7 +632,7 @@ namespace ImmersiveResearch
 
         private static void AddNewResearch(string researchName)
         {
-            //Log.Error("New research name: " + researchName, false);
+            Log.Error("New research name: " + researchName, false);
             FillResearchGraph(researchName);
         }
 
@@ -699,7 +735,7 @@ namespace ImmersiveResearch
             }
 
             // set the newly discovered research to 'discovered'
-            ImmersiveResearchProject newValues = new ImmersiveResearchProject(UndiscoveredResearchList.MainResearchDict[researchName].ProjectDef, true, UndiscoveredResearchList.MainResearchDict[researchName].Weighting, UndiscoveredResearchList.MainResearchDict[researchName].ResearchTypes);
+            ImmersiveResearchProject newValues = new ImmersiveResearchProject(UndiscoveredResearchList.MainResearchDict[researchName].ProjectDef, true, UndiscoveredResearchList.MainResearchDict[researchName].Weighting, UndiscoveredResearchList.MainResearchDict[researchName].ResearchTypes, UndiscoveredResearchList.MainResearchDict[researchName].ResearchSize);
             UndiscoveredResearchList.MainResearchDict[researchName] = newValues;
 
             //Log.Error("Is new research discovered: " + UndiscoveredResearchList[researchName].Item1.ToString(), false);

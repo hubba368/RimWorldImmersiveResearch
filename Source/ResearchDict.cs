@@ -11,14 +11,14 @@ namespace ImmersiveResearch
 {
     public class ResearchDict : IExposable
     {
-        private static Dictionary<string, ImmersiveResearchProject> UndiscoveredResearchList = new Dictionary<string, ImmersiveResearchProject>();  // dictionary of all possible research options, with respective 'discovered' flags and weightings.
+        private static Dictionary<string, ImmersiveResearchProject> UndiscoveredResearchList = new Dictionary<string, ImmersiveResearchProject>();
 
         private List<string> ResearchDictKeys = new List<string>();
         private List<bool> ResearchDictBools = new List<bool>();
         private List<float> ResearchDictWeightings = new List<float>();
         private List<List<ResearchTypes>> ResearchDictTypes = new List<List<ResearchTypes>>();
 
-        //TODO: figure out better way to scribe list of lists 
+        //TODO: figure out better way to scribe list of lists if possible
         private Dictionary<int, ResearchTypes> researchTypesLocal = new Dictionary<int, ResearchTypes>();
 
         public Dictionary<string, ImmersiveResearchProject> MainResearchDict
@@ -33,6 +33,7 @@ namespace ImmersiveResearch
             }
         }
 
+        // we only save vars that can be saved by the scribing system
         private void PrepareDictForScribing()
         {
             ResearchDictKeys.Clear();

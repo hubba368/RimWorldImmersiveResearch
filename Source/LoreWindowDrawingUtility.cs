@@ -30,7 +30,7 @@ namespace ImmersiveResearch
         }
 
         // fill up cachedEntries list with our Things
-        public void DrawLoreFullList(Rect inRect, List<string> thingList)
+        public void DrawLoreFullList(Rect inRect, List<string> thingList, string listTitle)
         {
             if (_cachedDrawEntries.NullOrEmpty<LoreDrawEntry>())
             {
@@ -42,15 +42,21 @@ namespace ImmersiveResearch
                     _cachedDrawEntries.Add(newEntry);
                 }
             }
-            DrawLoreListWorker(inRect);
+            DrawLoreListWorker(inRect, listTitle);
         }
 
         // Draw our list to the UI
         // mostly just ripped from original source code, jsut changed in a few areas for my needs
-        private void DrawLoreListWorker(Rect refRect)
+        private void DrawLoreListWorker(Rect refRect, string listTitle)
         {
+            Rect titleRect = new Rect(refRect);
+            titleRect.x = refRect.xMin + 50f;
+            titleRect.y = refRect.yMin;
+            Widgets.Label(titleRect, listTitle);
+
             Rect rect1 = new Rect(refRect);
             rect1.width *= 0.5f;
+            rect1.y += 25f;
             Rect rect2 = new Rect(refRect);
             rect2.x = rect1.xMax;
             rect2.width = refRect.xMax - rect2.x;
@@ -58,7 +64,6 @@ namespace ImmersiveResearch
             Rect viewRect = new Rect(0.0f, 0.0f, rect1.width - 16f, _listHeight);
             Widgets.BeginScrollView(rect1, ref _scrollPosition, viewRect, true);
             float curY = 0.0f;
-            string entryName = (string)null;
             _mousedOverEntry = (LoreDrawEntry)null;
 
             for(int index = 0; index < _cachedDrawEntries.Count; ++index)

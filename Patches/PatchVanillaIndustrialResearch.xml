@@ -7,6 +7,9 @@
         <researchTypes>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Essential
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -18,6 +21,9 @@
         <researchTypes>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -29,6 +35,9 @@
         <researchTypes>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -41,6 +50,9 @@
           <li>Electrical</li>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -52,6 +64,9 @@
         <researchTypes>
           <li>Biological</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -63,6 +78,9 @@
         <researchTypes>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -74,6 +92,9 @@
           <researchTypes>
             <li>Electrical</li>
           </researchTypes>
+          <ResearchSize>
+            Medium
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -86,6 +107,9 @@
             <li>Electrical</li>
             <li>Construction</li>
           </researchTypes>
+          <ResearchSize>
+            Small
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -97,6 +121,9 @@
           <researchTypes>
             <li>Biological</li>
           </researchTypes>
+          <ResearchSize>
+            Medium
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -108,6 +135,9 @@
           <researchTypes>
             <li>Electrical</li>
           </researchTypes>
+          <ResearchSize>
+            Medium
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -119,6 +149,9 @@
           <researchTypes>
             <li>Biological</li>
           </researchTypes>
+          <ResearchSize>
+            Small
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -131,6 +164,9 @@
             <li>Electrical</li>
             <li>Mechanical</li>
           </researchTypes>
+          <ResearchSize>
+            Small
+          </ResearchSize>
         </li>
       </value>
     </Operation>
@@ -143,6 +179,9 @@
           <li>Electrical</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -154,6 +193,9 @@
         <researchTypes>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -166,6 +208,9 @@
           <li>Medical</li>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -178,6 +223,9 @@
           <li>Electrical</li>
           <li>Metallurgy</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -190,6 +238,9 @@
           <li>Electrical</li>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -202,6 +253,9 @@
           <li>Medical</li>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -213,6 +267,9 @@
         <researchTypes>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -225,6 +282,9 @@
           <li>Mechanical</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -237,6 +297,9 @@
           <li>Mechanical</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -249,30 +312,9 @@
           <li>Mechanical</li>
           <li>Weaponry</li>
         </researchTypes>
-      </li>
-    </value>
-  </Operation>
-
-  <Operation Class="PatchOperationAddModExtension">
-    <xpath>/Defs/ResearchProjectDef[defName="FlakArmor"]</xpath>
-    <value>
-      <li Class="ImmersiveResearch.ResearchDefModExtension">
-        <researchTypes>
-          <li>Mechanical</li>
-          <li>Weaponry</li>
-        </researchTypes>
-      </li>
-    </value>
-  </Operation>
-
-  <Operation Class="PatchOperationAddModExtension">
-    <xpath>/Defs/ResearchProjectDef[defName="GasOperation"]</xpath>
-    <value>
-      <li Class="ImmersiveResearch.ResearchDefModExtension">
-        <researchTypes>
-          <li>Mechanical</li>
-          <li>Weaponry</li>
-        </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -285,6 +327,9 @@
           <li>Mechanical</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -297,6 +342,9 @@
           <li>Electrical</li>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -309,6 +357,9 @@
           <li>Electrical</li>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -322,6 +373,9 @@
           <li>Advanced</li>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -335,6 +389,9 @@
           <li>Biological</li>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -347,6 +404,9 @@
           <li>Medical</li>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -359,6 +419,9 @@
           <li>Mechanical</li>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -372,6 +435,9 @@
           <li>Biological</li>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -383,6 +449,9 @@
         <researchTypes>
           <li>Advanced</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -395,18 +464,9 @@
           <li>Advanced</li>
           <li>Weaponry</li>
         </researchTypes>
-      </li>
-    </value>
-  </Operation>
-
-  <Operation Class="PatchOperationAddModExtension">
-    <xpath>/Defs/ResearchProjectDef[defName="GunTurrets"]</xpath>
-    <value>
-      <li Class="ImmersiveResearch.ResearchDefModExtension">
-        <researchTypes>
-          <li>Mechanical</li>
-          <li>Weaponry</li>
-        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -419,6 +479,9 @@
           <li>Advanced</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -431,6 +494,9 @@
           <li>Advanced</li>
           <li>Weaponry</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -455,6 +521,9 @@
           <li>Advanced</li>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Essential
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -467,6 +536,9 @@
           <li>Advanced</li>
           <li>Mechanical</li>
         </researchTypes>
+        <ResearchSize>
+          Medium
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -479,6 +551,9 @@
           <li>Advanced</li>
           <li>Electrical</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -491,6 +566,9 @@
           <li>Advanced</li>
           <li>Medical</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>
@@ -503,6 +581,9 @@
           <li>Advanced</li>
           <li>Construction</li>
         </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
       </li>
     </value>
   </Operation>

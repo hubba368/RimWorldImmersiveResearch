@@ -45,7 +45,7 @@ namespace ImmersiveResearch
             loadResearchDisk.initAction = delegate
             {
                 // tell the patcher to add the specific research
-                LoreComputerHarmonyPatches.SelectResearchByWeighting();
+                LoreComputerHarmonyPatches.SelectResearchByUniformCumulativeProb(LoreComputerHarmonyPatches.UndiscoveredResearchList.MainResearchDict.Values.ToList());
                 _researchDisk.Destroy();
 
                 // show alert on complete - research unlocked etc

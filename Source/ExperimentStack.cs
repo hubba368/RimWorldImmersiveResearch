@@ -39,9 +39,6 @@ namespace ImmersiveResearch
 
         public void Delete(Experiment exp)
         {
-            exp.deleted = true;
-            _experiments.Remove(exp);
-
             Bill expBill = BillGiver.BillStack.Bills[_experiments.IndexOf(exp)];
 
             if (expBill != null)
@@ -52,6 +49,8 @@ namespace ImmersiveResearch
             {
                 Log.Error("bill is null");
             }
+            exp.deleted = true;
+            _experiments.Remove(exp);
         }
 
         public void Clear()
@@ -81,6 +80,13 @@ namespace ImmersiveResearch
         public int IndexOf(Experiment exp)
         {
             return _experiments.IndexOf(exp);
+        }
+
+        public void SetSuspended(Experiment exp, bool flag)
+        {
+            int index = _experiments.IndexOf(exp);
+            Bill expBill = BillGiver.BillStack.Bills[index];
+            expBill.suspended = flag;
         }
 
         public void ExposeData()
@@ -113,7 +119,7 @@ namespace ImmersiveResearch
             Text.Font = GameFont.Small;
             if(ListCount < 15)
             {
-                Rect rect2 = new Rect(rect.width / 4, -5f, 150f, 29f);
+                Rect rect2 = new Rect(rect.width / 4, rect.y, 150f, 29f);
                 if (Widgets.ButtonText(rect2, "Perform Experiment"))
                 {
                     Find.WindowStack.Add(new Dialog_ExperimentConfig(selTable));
@@ -125,7 +131,7 @@ namespace ImmersiveResearch
             Rect outRect = new Rect(0f, 35f, rect.width, rect.height - 35f);
             Rect viewRect = new Rect(0f, 0f, outRect.width - 16f, viewHeight);
             Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
-            float num = 0f;
+            float num = 5f;
             for(int i = 0; i < ListCount; i++)
             {
                 Experiment exp = _experiments[i];

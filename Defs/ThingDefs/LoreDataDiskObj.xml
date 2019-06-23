@@ -22,7 +22,7 @@
     <thingCategories>
       <li>Items</li>
     </thingCategories>
-    <stackLimit>1</stackLimit>
+    <stackLimit>20</stackLimit>
     <smallVolume>true</smallVolume>
     <deepCommonality>0.5</deepCommonality>
     <deepCountPerPortion>40</deepCountPerPortion>
@@ -56,7 +56,7 @@
     <thingCategories>
       <li>Items</li>
     </thingCategories>
-    <stackLimit>1</stackLimit>
+    <stackLimit>20</stackLimit>
     <smallVolume>true</smallVolume>
     <deepCommonality>0.5</deepCommonality>
     <deepCountPerPortion>40</deepCountPerPortion>
@@ -87,7 +87,7 @@
     <thingCategories>
       <li>Items</li>
     </thingCategories>
-    <stackLimit>1</stackLimit>
+    <stackLimit>20</stackLimit>
     <smallVolume>true</smallVolume>
     <deepCommonality>0.5</deepCommonality>
     <deepCountPerPortion>40</deepCountPerPortion>
@@ -118,7 +118,7 @@
     <thingCategories>
       <li>Items</li>
     </thingCategories>
-    <stackLimit>1</stackLimit>
+    <stackLimit>20</stackLimit>
     <smallVolume>true</smallVolume>
     <deepCommonality>0.5</deepCommonality>
     <deepCountPerPortion>40</deepCountPerPortion>

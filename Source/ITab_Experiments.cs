@@ -23,7 +23,7 @@ namespace ImmersiveResearch
         public ITab_Experiments()
         {
             size = _winSize;
-            labelKey = "TabExperiments";
+            labelKey = "TabBills";
             tutorTag = "Experiments";
         }
 

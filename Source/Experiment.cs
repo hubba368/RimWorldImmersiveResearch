@@ -131,20 +131,20 @@ namespace ImmersiveResearch
             Rect rect4 = new Rect(28f, 0f, rect.width - 48f - 20f, rect.height + 5f);
             Widgets.Label(rect4, LabelCap);
             //DoConfigInterface(rect.AtZero(), color);
-            Rect rect5 = new Rect(rect.width - 24f, 0f, 24f, 24f);
-            if (Widgets.ButtonText(rect5, "D"))
+            Rect rect5 = new Rect(300f, 0f, 70f, 24f);
+            if (Widgets.ButtonText(rect5, "Delete"))
             {
                 expStack.Delete(this);
                 SoundDefOf.Click.PlayOneShotOnCamera();
             }
             TooltipHandler.TipRegion(rect5, "DeleteBillTip".Translate());
 
-            Rect rect6 = new Rect(rect5);
-            rect6.x -= rect6.width + 4f;
-            if (Widgets.ButtonText(rect6, "S"))
+            Rect rect6 = new Rect(300f, 26f, 70f, 24f);
+            //rect6.x -= rect6.width + 4f;
+            if (Widgets.ButtonText(rect6, "Suspend"))
             {
                 this.suspended = !this.suspended;
-                //SoundDefOf.Click.PlayOneShotOnCamera();
+                expStack.SetSuspended(this, suspended);
             }
             TooltipHandler.TipRegion(rect6, "SuspendBillTip".Translate());
 

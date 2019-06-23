@@ -16,20 +16,29 @@ namespace ImmersiveResearch
         public override void PostMake()
         {
             base.PostMake();
-            ThingResearchTypes = def.GetModExtension<ResearchDefModExtension>().researchTypes;
-            GetResearchProjsByType();
+            ThingResearchTypes = def.GetModExtension<ResearchDefModExtension>().researchTypes;          
+            if (!ThingResearchTypes.NullOrEmpty())
+            {
+                GetResearchProjsByType();
+                SelectResearch();
+            }
+            
+        }
+
+        private void SelectResearch()
+        {
+            LoreComputerHarmonyPatches.SelectResearchByWeightingAndType(ResearchProjsForSelection, this);
         }
 
         private void GetResearchProjsByType()
         {
+            List<ResearchProjectDef> tempProjList = new List<ResearchProjectDef>();
             if (def.HasModExtension<ResearchDefModExtension>())
             {
                 if(!def.GetModExtension<ResearchDefModExtension>().researchTypes.NullOrEmpty())
                 {
                     // use harmony class to select from undiscoverd list based on research types per research
-                    // basically a big ass linq code block :(
-                    // then choose from result list and then call add to graph func
-                    // dicusting design principles and should def change but its too far gone now
+                    // should def refactor this
                     var TempDict = LoreComputerHarmonyPatches.UndiscoveredResearchList.MainResearchDict;
                     foreach(KeyValuePair<string, ImmersiveResearchProject> p in TempDict)
                     {
@@ -42,17 +51,21 @@ namespace ImmersiveResearch
                             {
                                 if (localType == storedType)
                                 {
-                                     string tempStr = String.Format("Matching R type: {0}", localType.ToString());
-                                     Log.Error(tempStr);
+                                    //string tempStr = String.Format("Matching R type: {0}", localType.ToString());
+                                    //Log.Error(tempStr);
                                     if (ProjDef != null)
                                     {
-                                        ResearchProjsForSelection.Add(ProjDef);
+                                        tempProjList.Add(ProjDef);
                                     }
 
                                 }
                             }
                         }                       
                     }
+                    // now get list of projs based on size
+                    var prunedList = tempProjList.Where(item => item.GetModExtension<ResearchDefModExtension>().ResearchSize == this.def.GetModExtension<ResearchDefModExtension>().ResearchSize);
+
+                    ResearchProjsForSelection.AddRange(prunedList);
                 }
                 else
                 {
@@ -63,7 +76,7 @@ namespace ImmersiveResearch
 
         public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
         {
-            // generate 
+            base.Destroy();
         }
     }
 }

@@ -52,7 +52,6 @@
       <li>ImmersiveResearch.ITab_Experiments</li>
     </inspectorTabs>
     <recipes>
-      <li>ResearchExperiment</li>
       <li>SmallMechanicalResearch</li>
     </recipes>
   </ThingDef>

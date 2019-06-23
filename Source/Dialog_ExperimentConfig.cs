@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,14 @@ namespace ImmersiveResearch
         private List<string> _experimentNames = new List<string>();
         private List<string> _experimentTypes = new List<string>();
 
+        public override Vector2 InitialSize
+        {
+            get
+            {
+                return new Vector2(760f, 760f);
+            }
+        }
+
         public Dialog_ExperimentConfig()
         {
             InitExperiments();
@@ -36,23 +45,50 @@ namespace ImmersiveResearch
         {
             return new Experiment(_selectedRecipe);
         }
-
+        /*None,
+        Biological,
+        Mechanical,
+        Construction,
+        Metallurgy,
+        Carpentry,
+        Weaponry,
+        Apparel,
+        Masonry,
+        Electrical,
+        Medical,
+        Spacecraft,
+        Advanced,
+        Spacer*/
         private void InitExperiments()
-        {
+        {// todo move this to a game component to stop remaking list every window open
             _experimentNames.Add("MechanicalResearch");
+            _experimentNames.Add("BiologicalResearch");
+            _experimentNames.Add("MechanicalResearch");
+            _experimentNames.Add("ConstructionResearch");
+            _experimentNames.Add("MetallurgyResearch");
+            _experimentNames.Add("WeaponryResearch");
+            _experimentNames.Add("ElectricalResearch");
+            _experimentNames.Add("MedicalResearch");
+            _experimentNames.Add("AdvancedResearch");
+            _experimentNames.Add("SpacerResearch");
+            _experimentNames.Add("SpacecraftResearch");
+
             _experimentTypes.Add("Small");
-            _selectedRecipe = DefDatabase<RecipeDef>.AllDefsListForReading[0];
+            _experimentTypes.Add("Medium");
+            _experimentTypes.Add("Large");
+            _experimentTypes.Add("Essential");
+
+            //default selection to dodge nullref exceps
+            _selectedRecipe = DefDatabase<RecipeDef>.AllDefsListForReading[0]; 
         }
 
         public override void DoWindowContents(Rect inRect)
         {// TODO need msgbox on exit to confirm to leave 
             string selectedExp = "";
             string selectedExpType = "";
-
+            
             //title
-            Rect rect1 = new Rect(inRect).ContractedBy(50f);
-            rect1.height = 74f;
-            rect1.width = 200f;
+            Rect rect1 = new Rect(inRect.center.x - 120f, inRect.yMin + 35f, 200f, 74f);
             Text.Font = GameFont.Medium;
             Widgets.Label(rect1, "Experiment Setup");
 
@@ -61,23 +97,26 @@ namespace ImmersiveResearch
             rect2.yMin = rect1.yMax;
             rect2.yMax -= 38f;
             Text.Font = GameFont.Small;
-            Widgets.Label(rect2, "You can perform different types and sizes of experiments here, determining what kind of research you can unlock.");
+            Widgets.Label(rect2, "You can perform different types and sizes of experiments here, determining what kind of research you can unlock. The size of the research helps increase your chances of obtaining better research.");
 
-            // 'select experiment' drop down
-            Rect AddExpRect = new Rect(rect2);
-            AddExpRect.width += 50f;
-            AddExpRect.y += 30f;
-            
-            ExpList.DrawLoreFullList(AddExpRect, _experimentNames);
+            // 'select experiment' list
+            Rect AddExpRect = new Rect(rect2.ContractedBy(70f));
+            AddExpRect.width = 550f;
+            AddExpRect.height /= 2;
+            AddExpRect.y += 20f;
+            AddExpRect.x += 250f;
+
+            ExpList.DrawLoreFullList(AddExpRect, _experimentNames, "Experiment Types");
             selectedExp = ExpList.SelectedEntry != null ? ExpList.SelectedEntry.EntryLabel : "None Selected";
 
-            // 'select type' drop down
-            Rect AddExpTypeRect = new Rect(rect2);
-            AddExpTypeRect.width += 50f;
-            AddExpTypeRect.y += 50f;
-            AddExpTypeRect.x += 250f;
+            // 'select type' list
+            Rect AddExpTypeRect = new Rect(AddExpRect);
+            AddExpTypeRect.x = inRect.x;
+            AddExpTypeRect.ContractedBy(20f);
+            AddExpTypeRect.width = 250f;
+            //AddExpTypeRect.y += 20f;
 
-            ExpTypeList.DrawLoreFullList(AddExpTypeRect, _experimentTypes);
+            ExpTypeList.DrawLoreFullList(AddExpTypeRect, _experimentTypes, "Experiment Sizes");
             selectedExpType = ExpTypeList.SelectedEntry != null ? ExpTypeList.SelectedEntry.EntryLabel : "";
 
             // need to get defName of recipe from this point
@@ -93,20 +132,24 @@ namespace ImmersiveResearch
             }
 
             // text explaining selection, e.g. 'Small Biological Research Project - will help unlock biological research'
-            Rect rect3 = rect2;
-            rect3.yMin += 110f; 
+            Rect rect3 = new Rect(inRect.position, rect2.size);
+            rect3.x = inRect.center.x - 150f;
+            rect3.y = inRect.yMax - 100f;
+            Text.Font = GameFont.Medium;
             Widgets.Label(rect3, _selectedExperimentDefName);
-            Rect rect4 = rect2;
-            rect4.yMin += 100f;
+            Text.Font = GameFont.Small;
+            Rect rect4 = rect3;
+            rect4.x = inRect.x;
+            rect4.y = inRect.yMax - 250f;
             Widgets.Label(rect4, _selectedRecipe.description);
 
             // confirm button
-            Rect rect5 = new Rect(rect4.x, rect4.y + 30f, 150f, 29f);
+            Rect rect5 = new Rect(inRect.center.x - 100f, inRect.yMax - 35f, 150f, 29f);
             if (Widgets.ButtonText(rect5, "Confirm Experiment"))
             {
                 if (_selectedRecipe.defName != "ButcherCorpseFlesh")
                 {
-                    // todo message box for confirmation
+                    // TODO: change the assumption above to something less naive
                     Bill newExpBill = (Bill_ProductionWithUft)_selectedRecipe.MakeNewBill();
                     Experiment newExp = MakeNewExperiment();
                     _selectedTable.billStack.AddBill(newExpBill);
@@ -114,15 +157,27 @@ namespace ImmersiveResearch
                     if (_selectedRecipe.ProducedThingDef.HasModExtension<ResearchDefModExtension>())
                     {
                         _selectedRecipe.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.AddRange(_selectedRecipe.GetModExtension<ResearchDefModExtension>().researchTypes);
+                        _selectedRecipe.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = _selectedRecipe.GetModExtension<ResearchDefModExtension>().ResearchSize;
                     }
+
+                    this.Close();
                 }
                 else
                 {
-                    // msg box "no experiment has been selected"
+                    /*Dialog_MessageBox window = Dialog_MessageBox.CreateConfirmation("No Experiment Selected", delegate
+                    {                      
+                    }, destructive: true);
+                    Find.WindowStack.Add(window);*/
+
                 }
             }
 
             // exit button
+        }
+
+        private void CloseMsgBoxWindow(Dialog_MessageBox mb)
+        {
+            mb.Close();
         }
 
     }
