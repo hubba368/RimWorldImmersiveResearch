@@ -16,7 +16,6 @@ namespace ImmersiveResearch
         private List<string> ResearchDictKeys = new List<string>();
         private List<bool> ResearchDictBools = new List<bool>();
         private List<float> ResearchDictWeightings = new List<float>();
-        private List<List<ResearchTypes>> ResearchDictTypes = new List<List<ResearchTypes>>();
 
         //TODO: figure out better way to scribe list of lists if possible
         private Dictionary<int, ResearchTypes> researchTypesLocal = new Dictionary<int, ResearchTypes>();
@@ -45,7 +44,6 @@ namespace ImmersiveResearch
                 ResearchDictKeys.Add(UndiscoveredResearchList.ElementAt(i).Key);
                 ResearchDictBools.Add(UndiscoveredResearchList.ElementAt(i).Value.IsDiscovered);
                 ResearchDictWeightings.Add(UndiscoveredResearchList.ElementAt(i).Value.Weighting);
-                //ResearchDictTypes.Add(UndiscoveredResearchList.ElementAt(i).Value.ResearchTypes);
             }
         }
 
@@ -54,9 +52,17 @@ namespace ImmersiveResearch
             UndiscoveredResearchList.Clear();
             for(int i = 0; i < ResearchDictKeys.Count(); i++)
             {
-                var projToAdd  = DefDatabase<ResearchProjectDef>.AllDefsListForReading.Where(item => item.defName == ResearchDictKeys[i]);
-                ResearchProjectDef proj = projToAdd.ElementAt(0);
-                UndiscoveredResearchList.Add(ResearchDictKeys[i], new ImmersiveResearchProject(proj, ResearchDictBools[i], ResearchDictWeightings[i]));
+                var projToAdd  = LoreComputerHarmonyPatches.TempResearchList.Where(item => item.defName == ResearchDictKeys[i]);
+
+                if(!(projToAdd.Count() < 0))
+                {
+                    ResearchProjectDef proj = projToAdd.ElementAt(0);
+                    UndiscoveredResearchList.Add(ResearchDictKeys[i], new ImmersiveResearchProject(proj, ResearchDictBools[i], ResearchDictWeightings[i]));
+                }
+                else
+                {
+                    Log.Error("A research project def was null/not found.");
+                }
             }
         }
 
@@ -66,7 +72,6 @@ namespace ImmersiveResearch
             Scribe_Collections.Look(ref ResearchDictKeys, "MainResearchDictKeys", LookMode.Value);
             Scribe_Collections.Look(ref ResearchDictBools, "MainResearchDictBools", LookMode.Value);
             Scribe_Collections.Look(ref ResearchDictWeightings, "MainResearchDictWeightings", LookMode.Value);
-            //Scribe_Collections.Look(ref ResearchDictTypes, "MainResearchTypes", LookMode.Value);
 
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {

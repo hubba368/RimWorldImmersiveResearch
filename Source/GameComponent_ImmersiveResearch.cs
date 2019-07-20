@@ -23,6 +23,10 @@ namespace ImmersiveResearch
             }
         }
 
+        public Dictionary<string, int> TempExperimentDict { get => _tempExperimentDict; set => _tempExperimentDict = value; }
+
+        private Dictionary<string, int> _tempExperimentDict = new Dictionary<string, int>();
+
         public GameComponent_ImmersiveResearch(Game game) : base()
         {
             researchDict = new ResearchDict();

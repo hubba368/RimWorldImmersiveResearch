@@ -509,6 +509,9 @@
           <li>Advanced</li>
           <li>Weaponry</li>
         </researchTypes>
+	<ResearchSize>
+	  Large
+	</ResearchSize>
       </li>
     </value>
   </Operation>
@@ -519,7 +522,6 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Advanced</li>
-          <li>Electrical</li>
         </researchTypes>
         <ResearchSize>
           Essential

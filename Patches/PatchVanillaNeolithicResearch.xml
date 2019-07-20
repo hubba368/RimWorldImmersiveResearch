@@ -175,7 +175,7 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Carpentry</li>
-	        <li>Weaponry</li>
+	  <li>Weaponry</li>
         </researchTypes>
         <ResearchSize>
           Small
@@ -265,7 +265,7 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Metallurgy</li>
-	        <li>Weaponry</li>
+	  <li>Weaponry</li>
         </researchTypes>
         <ResearchSize>
           Small
@@ -280,7 +280,7 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Metallurgy</li>
-	        <li>Weaponry</li>
+	  <li>Weaponry</li>
         </researchTypes>
         <ResearchSize>
           Small
@@ -295,7 +295,7 @@
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>
           <li>Carpentry</li>
-	        <li>Weaponry</li>
+	  <li>Weaponry</li>
         </researchTypes>
         <ResearchSize>
           Small

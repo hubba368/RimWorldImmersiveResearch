@@ -9,63 +9,118 @@ namespace ImmersiveResearch
 {
     public class Thing_FinishedExperiment : ThingWithComps
     {
-        private List<ResearchTypes> ThingResearchTypes = new List<ResearchTypes>();
+        private List<ResearchTypes> _thingResearchTypes = new List<ResearchTypes>();
 
-        private List<ResearchProjectDef> ResearchProjsForSelection = new List<ResearchProjectDef>();
+        private ResearchSizes _thingResearchSize = 0;
+
+        private List<ResearchProjectDef> _researchProjsForSelection = new List<ResearchProjectDef>();
+
+        public List<ResearchTypes> ThingResearchTypes { get => _thingResearchTypes; set => _thingResearchTypes = value; }
+        public ResearchSizes ThingResearchSize { get => _thingResearchSize; set => _thingResearchSize = value; }
+
 
         public override void PostMake()
         {
             base.PostMake();
-            ThingResearchTypes = def.GetModExtension<ResearchDefModExtension>().researchTypes;          
-            if (!ThingResearchTypes.NullOrEmpty())
+            _thingResearchTypes = def.GetModExtension<ResearchDefModExtension>().researchTypes;   
+            _thingResearchSize = def.GetModExtension<ResearchDefModExtension>().ResearchSize;
+            
+            //Log.Error(_thingResearchSize.ToString());
+            //Log.Error(_thingResearchTypes[0].ToString());
+
+            if (!_thingResearchTypes.NullOrEmpty())
             {
-                GetResearchProjsByType();
-                SelectResearch();
+                GetResearchProjsByType();              
+            }
+            else
+            {
+                Log.Error("Thing_FinishedExperiment failed to get research types from recipe.");
             }
             
         }
 
         private void SelectResearch()
         {
-            LoreComputerHarmonyPatches.SelectResearchByWeightingAndType(ResearchProjsForSelection, this);
+            LoreComputerHarmonyPatches.SelectResearchByWeightingAndType(_researchProjsForSelection);
         }
 
         private void GetResearchProjsByType()
         {
-            List<ResearchProjectDef> tempProjList = new List<ResearchProjectDef>();
             if (def.HasModExtension<ResearchDefModExtension>())
             {
-                if(!def.GetModExtension<ResearchDefModExtension>().researchTypes.NullOrEmpty())
+                if (!def.GetModExtension<ResearchDefModExtension>().researchTypes.NullOrEmpty())
                 {
-                    // use harmony class to select from undiscoverd list based on research types per research
-                    // should def refactor this
+                    List<ImmersiveResearchProject> tempProjList = new List<ImmersiveResearchProject>();
                     var TempDict = LoreComputerHarmonyPatches.UndiscoveredResearchList.MainResearchDict;
-                    foreach(KeyValuePair<string, ImmersiveResearchProject> p in TempDict)
+
+                    if (_thingResearchTypes[0] == ResearchTypes.Mod)
                     {
-                        var TempRTypes = !p.Value.ResearchTypes.NullOrEmpty() ? p.Value.ResearchTypes : null;
-                        var ProjDef = p.Value.ProjectDef != null ? p.Value.ProjectDef : null;                     
+                        tempProjList = TempDict.Values.ToList();
+                        tempProjList.RemoveAll(item => item.ResearchTypes[0] != ResearchTypes.Mod);
 
-                        foreach(ResearchTypes storedType in ThingResearchTypes)
+                        var finalList = new List<ResearchProjectDef>();
+
+                        for (int i = 0; i < tempProjList.Count; i++)
                         {
-                            foreach(ResearchTypes localType in TempRTypes)
-                            {
-                                if (localType == storedType)
-                                {
-                                    //string tempStr = String.Format("Matching R type: {0}", localType.ToString());
-                                    //Log.Error(tempStr);
-                                    if (ProjDef != null)
-                                    {
-                                        tempProjList.Add(ProjDef);
-                                    }
+                            finalList.Add(tempProjList[i].ProjectDef);
+                        }
+                        _researchProjsForSelection.AddRange(finalList);
+                    }
+                    else
+                    {
+                        var t = TempDict.Values.ToList().Where(item => item.ResearchSize == _thingResearchSize);
+                        var finalSearchSpace = t.Where(item => item.ResearchTypes.Any(x => x == _thingResearchTypes[0]));
 
+                        foreach(ImmersiveResearchProject p in finalSearchSpace)
+                        {
+                            /*Log.Error(p.ProjectDef.defName);
+                            Log.Error(p.ResearchSize.ToString());
+                            foreach(ResearchTypes q in p.ResearchTypes)
+                            {
+                                Log.Error(q.ToString());
+                            }                          
+                            Log.Error("");*/
+
+                            var ProjDef = p.ProjectDef != null ? p.ProjectDef : null;
+
+                            if (ProjDef != null)
+                            {
+                                if (!TempDict.ContainsKey(ProjDef.defName))
+                                {
+                                    //Log.Error("cant find key: " + ProjDef.defName);
+                                    continue;
+                                }
+                                if (TempDict[ProjDef.defName].IsDiscovered == true)
+                                {
+                                    //Log.Error("is discovered: " + ProjDef.defName);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Log.Error("adding proj: " + ProjDef.defName);
+                                    tempProjList.Add(TempDict[ProjDef.defName]);
                                 }
                             }
-                        }                       
-                    }
-                    // now get list of projs based on size
-                    var prunedList = tempProjList.Where(item => item.GetModExtension<ResearchDefModExtension>().ResearchSize == this.def.GetModExtension<ResearchDefModExtension>().ResearchSize);
+                        }
 
-                    ResearchProjsForSelection.AddRange(prunedList);
+                        if (tempProjList.Count > 0)
+                        {
+                            var finalList = new List<ResearchProjectDef>();
+
+                            for (int i = 0; i < tempProjList.Count(); i++)
+                            {
+                                finalList.Add(tempProjList[i].ProjectDef);
+                            }
+
+                            _researchProjsForSelection.AddRange(finalList);
+                            SelectResearch();
+                        }
+                        else
+                        {
+                            //Log.Error("no researches are undiscovered");
+                            Find.LetterStack.ReceiveLetter("Experiment Completed", "An experiment has been completed, and unfortunately nothing has been discovered.", LetterDefOf.NeutralEvent);
+                        }
+                    }
                 }
                 else
                 {
@@ -77,6 +132,13 @@ namespace ImmersiveResearch
         public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
         {
             base.Destroy();
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            //Scribe_Collections.Look(ref _thingResearchTypes, "ResearchTypes", LookMode.Value);
+           // Scribe_Values.Look(ref _thingResearchSize, "ResearchSize");
         }
     }
 }

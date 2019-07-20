@@ -4,7 +4,7 @@
   <JobDef>
     <defName>LoreResearchDiskDef</defName>
     <driverClass>ImmersiveResearch.JobDriver_LoadResearchDisk</driverClass>
-    <reportString>Attempting To Decode Datadisk.</reportString>
+    <reportString>Attempting To Read Research Disk.</reportString>
   </JobDef>
 
 </Defs>

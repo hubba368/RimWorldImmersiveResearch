@@ -7,7 +7,7 @@
     <description>Perform experiments on resources to unlock new knowledge.</description>
     <thingClass>ImmersiveResearch.Building_ExperimentBench</thingClass>
     <graphicData>
-      <texPath>Things/Building/LoreComputer</texPath>
+      <texPath>Things/Building/ExperimentBench/ExpBench</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>(3.5,1.5)</drawSize>
       <shadowData>

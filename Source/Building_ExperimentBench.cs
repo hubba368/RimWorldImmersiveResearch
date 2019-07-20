@@ -32,6 +32,12 @@ namespace ImmersiveResearch
         {
             base.TickRare();
         }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Deep.Look(ref ExpStack, "experimentStack", this);
+        }
     }
 
 }

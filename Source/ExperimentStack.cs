@@ -8,6 +8,7 @@ namespace ImmersiveResearch
 {
     public class ExperimentStack : IExposable
     {
+        [Unsaved]
         public IBillGiver BillGiver;
 
         public ExperimentStack(IBillGiver giver)
@@ -82,6 +83,11 @@ namespace ImmersiveResearch
             return _experiments.IndexOf(exp);
         }
 
+        public int IndexOfBillToExp(Bill bill)
+        {
+            return BillGiver.BillStack.IndexOf(bill);
+        }
+
         public void SetSuspended(Experiment exp, bool flag)
         {
             int index = _experiments.IndexOf(exp);
@@ -89,31 +95,49 @@ namespace ImmersiveResearch
             expBill.suspended = flag;
         }
 
+        private void CheckIfExperimentCompleted(Experiment exp)
+        {
+            Bill expBill = BillGiver.BillStack.Bills[_experiments.IndexOf(exp)];
+
+            if(expBill == null)
+            {
+               // Log.Error("exp is completed");
+                Delete(exp);
+            }
+            else
+            {
+               // Log.Error("exp is not completed");
+            }
+        }
+
         public void ExposeData()
         {
-            // load bill stack to exp stack on load TODO harmony patch billstack version "Experiment Bench"
+            Scribe_Collections.Look(ref _experiments, "Experiments", LookMode.Deep);
+
+            if (Scribe.mode == LoadSaveMode.ResolvingCrossRefs)
+            {
+                if (_experiments.RemoveAll((Experiment x) => x == null) != 0)
+                {
+                    Log.Error("Some experiments were null after loading.");
+                }
+                for (int i = 0; i < _experiments.Count; i++)
+                {
+                    _experiments[i].expStack = this;
+                }
+            }
+
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
-                List<Bill> testList = new List<Bill>();
-                Scribe_Collections.Look(ref testList, "bills", LookMode.Deep);
-                if (Scribe.mode == LoadSaveMode.ResolvingCrossRefs)
-                {
-                    if (testList.RemoveAll((Bill x) => x == null) != 0)
-                    {
-                        Log.Error("Some bills were null after loading.");
-                    }
-
-                }
-                for (int i = 0; i < testList.Count; i++)
-                {
-                    Experiment newExp = new Experiment(BillGiver.BillStack.Bills[i].recipe);
-                    _experiments.Add(newExp);
-                }
             }
         }
 
         public Experiment DoListing(Rect rect, Building_ExperimentBench selTable, ref Vector2 scrollPosition, ref float viewHeight)
         {
+            for(int i = 0; i < _experiments.Count; i++)
+            {
+                CheckIfExperimentCompleted(_experiments[i]);
+            }
+
             Experiment result = null;
             GUI.BeginGroup(rect);
             Text.Font = GameFont.Small;

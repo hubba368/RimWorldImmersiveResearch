@@ -7,7 +7,7 @@
     <description>A robust machine with the capability to analyse and decode various types of datadisks.</description>
     <thingClass>ImmersiveResearch.Building_LoreComputer</thingClass>
     <graphicData>
-      <texPath>Things/Building/LoreComputer</texPath>
+      <texPath>Things/Building/DiskAnalyzer/LoreComputer</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <drawSize>(1,1)</drawSize>
       <damageData>

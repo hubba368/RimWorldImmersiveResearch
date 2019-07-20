@@ -6,36 +6,37 @@
     <defName>UnfinishedExperiment</defName>
     <label>unfinished experiment</label>
     <graphicData>
-      <texPath>Things/Item/Unfinished/UnfinishedComponent</texPath>
+      <texPath>Things/Item/Experiment/UnfinishedExperiment/UnfinishedExp</texPath>
       <graphicClass>Graphic_Single</graphicClass>
     </graphicData>
-    <stuffCategories Inherit="false">
-      <li>Fabric</li>
-      <li>Leathery</li>
-      <li>Stony</li>
-      <li>Woody</li>
-      <li>Metallic</li>
-    </stuffCategories>
+
   </ThingDef>
 
   <ThingDef ParentName="ResourceBase">
     <defName>FinishedExperiment</defName>
     <label>Finished Experiment</label>
-    <description>A finished experiment project. You can safely sell these.</description>
+    <description>A finished experiment project. You can safely sell this.</description>
     <thingClass>ImmersiveResearch.Thing_FinishedExperiment</thingClass>
-    <drawGUIOverlay>false</drawGUIOverlay>
+    <drawGUIOverlay>true</drawGUIOverlay>
     <graphicData>
-      <texPath>Things/Item/Unfinished/UnfinishedComponent</texPath>
+      <texPath>Things/Item/Experiment/FinishedExperiment/FinishedExp</texPath>
       <graphicClass>Graphic_Single</graphicClass>
       <shaderType>CutoutComplex</shaderType>
     </graphicData>
     <statBases>
       <Mass>0.5</Mass>
+      <MarketValue>150</MarketValue>
     </statBases>
+    <thingCategories>
+      <li>Items</li>
+    </thingCategories>
     <tradeNeverStack>true</tradeNeverStack>
     <resourceReadoutPriority>Middle</resourceReadoutPriority>
     <stackLimit>25</stackLimit>
     <useHitPoints>true</useHitPoints>
+    <tradeTags>
+      <li>ExoticMisc</li>
+    </tradeTags>
     <modExtensions>
       <li Class="ImmersiveResearch.ResearchDefModExtension">
         <researchTypes>

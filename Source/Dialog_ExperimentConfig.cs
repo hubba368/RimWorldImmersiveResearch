@@ -45,25 +45,11 @@ namespace ImmersiveResearch
         {
             return new Experiment(_selectedRecipe);
         }
-        /*None,
-        Biological,
-        Mechanical,
-        Construction,
-        Metallurgy,
-        Carpentry,
-        Weaponry,
-        Apparel,
-        Masonry,
-        Electrical,
-        Medical,
-        Spacecraft,
-        Advanced,
-        Spacer*/
+
         private void InitExperiments()
         {// todo move this to a game component to stop remaking list every window open
             _experimentNames.Add("MechanicalResearch");
             _experimentNames.Add("BiologicalResearch");
-            _experimentNames.Add("MechanicalResearch");
             _experimentNames.Add("ConstructionResearch");
             _experimentNames.Add("MetallurgyResearch");
             _experimentNames.Add("WeaponryResearch");
@@ -72,11 +58,13 @@ namespace ImmersiveResearch
             _experimentNames.Add("AdvancedResearch");
             _experimentNames.Add("SpacerResearch");
             _experimentNames.Add("SpacecraftResearch");
+            _experimentNames.Add("ModResearch");
 
             _experimentTypes.Add("Small");
             _experimentTypes.Add("Medium");
             _experimentTypes.Add("Large");
             _experimentTypes.Add("Essential");
+            _experimentTypes.Add("Unknown");
 
             //default selection to dodge nullref exceps
             _selectedRecipe = DefDatabase<RecipeDef>.AllDefsListForReading[0]; 
@@ -86,6 +74,7 @@ namespace ImmersiveResearch
         {// TODO need msgbox on exit to confirm to leave 
             string selectedExp = "";
             string selectedExpType = "";
+            string recipeDescription = "Invalid Recipe Combination.";
             
             //title
             Rect rect1 = new Rect(inRect.center.x - 120f, inRect.yMin + 35f, 200f, 74f);
@@ -104,7 +93,7 @@ namespace ImmersiveResearch
             AddExpRect.width = 550f;
             AddExpRect.height /= 2;
             AddExpRect.y += 20f;
-            AddExpRect.x += 250f;
+            AddExpRect.x += 275f;
 
             ExpList.DrawLoreFullList(AddExpRect, _experimentNames, "Experiment Types");
             selectedExp = ExpList.SelectedEntry != null ? ExpList.SelectedEntry.EntryLabel : "None Selected";
@@ -113,7 +102,7 @@ namespace ImmersiveResearch
             Rect AddExpTypeRect = new Rect(AddExpRect);
             AddExpTypeRect.x = inRect.x;
             AddExpTypeRect.ContractedBy(20f);
-            AddExpTypeRect.width = 250f;
+            AddExpTypeRect.width = 275f;
             //AddExpTypeRect.y += 20f;
 
             ExpTypeList.DrawLoreFullList(AddExpTypeRect, _experimentTypes, "Experiment Sizes");
@@ -129,6 +118,7 @@ namespace ImmersiveResearch
             else
             {
                 _selectedRecipe = finalDef;
+                recipeDescription = _selectedRecipe.description;
             }
 
             // text explaining selection, e.g. 'Small Biological Research Project - will help unlock biological research'
@@ -141,11 +131,19 @@ namespace ImmersiveResearch
             Rect rect4 = rect3;
             rect4.x = inRect.x;
             rect4.y = inRect.yMax - 250f;
-            Widgets.Label(rect4, _selectedRecipe.description);
+            Widgets.Label(rect4, recipeDescription);
+
+            Rect rect5 = rect4;
+            rect5.x = inRect.x;
+            rect5.y = inRect.yMax - 180f;
+            if (_selectedRecipe.HasModExtension<ResearchDefModExtension>())
+            {
+                Widgets.Label(rect5, "Potential Research Projects left to discover: " + LoreComputerHarmonyPatches.GetNumOfUnfoundProjsByRecipe(_selectedRecipe));
+            }
 
             // confirm button
-            Rect rect5 = new Rect(inRect.center.x - 100f, inRect.yMax - 35f, 150f, 29f);
-            if (Widgets.ButtonText(rect5, "Confirm Experiment"))
+            Rect rect6 = new Rect(inRect.center.x - 100f, inRect.yMax - 35f, 150f, 29f);
+            if (Widgets.ButtonText(rect6, "Confirm Experiment"))
             {
                 if (_selectedRecipe.defName != "ButcherCorpseFlesh")
                 {
@@ -154,25 +152,18 @@ namespace ImmersiveResearch
                     Experiment newExp = MakeNewExperiment();
                     _selectedTable.billStack.AddBill(newExpBill);
                     _selectedTable.ExpStack.AddExperiment(newExp);
-                    if (_selectedRecipe.ProducedThingDef.HasModExtension<ResearchDefModExtension>())
-                    {
-                        _selectedRecipe.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.AddRange(_selectedRecipe.GetModExtension<ResearchDefModExtension>().researchTypes);
-                        _selectedRecipe.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = _selectedRecipe.GetModExtension<ResearchDefModExtension>().ResearchSize;
-                    }
-
+                     
                     this.Close();
                 }
                 else
                 {
-                    /*Dialog_MessageBox window = Dialog_MessageBox.CreateConfirmation("No Experiment Selected", delegate
+                    Dialog_MessageBox window = Dialog_MessageBox.CreateConfirmation("No Experiment Selected", delegate
                     {                      
                     }, destructive: true);
-                    Find.WindowStack.Add(window);*/
-
+                    Find.WindowStack.Add(window);
                 }
             }
-
-            // exit button
+            // exit button?
         }
 
         private void CloseMsgBoxWindow(Dialog_MessageBox mb)

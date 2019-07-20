@@ -82,13 +82,6 @@ namespace ImmersiveResearch
             this.recipe = recipe;
         }
 
-        protected virtual void DoConfigInterface(Rect rect, Color baseColour)
-        {
-            // draw buttons here 
-            // maybe draw resources being used per experiment
-            
-        }
-
         // copied from Bill implementation (Draws an instance in the experiment window)
         public Rect DoInterface(float x, float y, float width, int index)
         {
@@ -177,8 +170,11 @@ namespace ImmersiveResearch
             return "Experiment_" + recipe.defName + "_" + loadID;
         }
 
-        public void ExposeData()
+        public virtual void ExposeData()
         {
+            Scribe_Defs.Look(ref recipe, "recipe");
+            Scribe_Values.Look(ref suspended, "suspended", defaultValue: false);
+
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
             }
