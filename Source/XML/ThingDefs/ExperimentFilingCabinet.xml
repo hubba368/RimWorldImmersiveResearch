@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>ExperimentFilingCabinet</defName>
+    <label>Experiment Filing Cabinet</label>
+    <description>A filing cabinet for the storage of finished experiments.</description>
+    <thingClass>ImmersiveResearch.Building_ExperimentFilingCabinet</thingClass>
+    <graphicData>
+      <texPath>Things/Building/FilingCabinet/FilingCabinet</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1,1)</drawSize>
+      <damageData>
+        <rect>(0.05,0.05,0.95,0.95)</rect>
+      </damageData>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>150</pathCost>
+    <blockWind>true</blockWind>
+    <fillPercent>0.8</fillPercent>
+    <castEdgeShadows>false</castEdgeShadows>
+    <statBases>
+      <MaxHitPoints>300</MaxHitPoints>
+      <WorkToBuild>2500</WorkToBuild>
+      <Flammability>0.7</Flammability>
+      <Beauty>2</Beauty>
+    </statBases>
+    <tickerType>Rare</tickerType>
+    <canOverlapZones>false</canOverlapZones>
+    <size>(1,1)</size>
+    <selectable>true</selectable>
+    <rotatable>true</rotatable>
+    <designationCategory>Misc</designationCategory>
+    <costList>
+      <Steel>50</Steel>
+    </costList>
+    <constructEffect>ConstructMetal</constructEffect>
+    <killedLeavings>
+      <ChunkSlagSteel>1</ChunkSlagSteel>
+    </killedLeavings>
+  </ThingDef>
+
+</Defs>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <WorkGiverDef>
+    <defName>DoStudy</defName>
+    <label>study experiment</label>
+    <giverClass>ImmersiveResearch.WorkGiver_StudyExperiment</giverClass>
+    <workType>Research</workType>
+    <priorityInType>90</priorityInType>
+    <fixedBillGiverDefs>
+      <li>StudyTable</li>
+    </fixedBillGiverDefs>
+    <verb>experiment</verb>
+    <gerund>studying experiment at</gerund>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <prioritizeSustains>true</prioritizeSustains>
+  </WorkGiverDef>
+
+</Defs>

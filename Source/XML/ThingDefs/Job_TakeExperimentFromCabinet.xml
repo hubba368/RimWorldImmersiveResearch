@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <JobDef>
+    <defName>CabinetTakeExperiment</defName>
+    <driverClass>ImmersiveResearch.JobDriver_TakeExperimentFromCabinet</driverClass>
+    <reportString>Attempting To Take Experiment From Cabinet.</reportString>
+  </JobDef>
+
+</Defs>

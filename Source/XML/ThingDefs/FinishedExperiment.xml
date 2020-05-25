@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+
+  <ThingDef ParentName="UnfinishedBase">
+    <defName>UnfinishedExperiment</defName>
+    <label>unfinished experiment</label>
+    <graphicData>
+      <texPath>Things/Item/Experiment/UnfinishedExperiment/UnfinishedExp</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <stuffCategories Inherit="false" />
+  </ThingDef>
+
+  <ThingDef ParentName="ResourceBase">
+    <defName>FinishedExperiment</defName>
+    <label>Finished Experiment</label>
+    <description>A finished experiment project. You can safely sell this.</description>
+    <thingClass>ImmersiveResearch.Thing_FinishedExperiment</thingClass>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <graphicData>
+      <texPath>Things/Item/Experiment/FinishedExperiment/FinishedExp</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutComplex</shaderType>
+    </graphicData>
+    <statBases>
+      <Mass>0.5</Mass>
+      <MarketValue>150</MarketValue>
+    </statBases>
+    <thingCategories>
+      <li>Items</li>
+    </thingCategories>
+    <comps>
+      <li Class="ImmersiveResearch.ResearchCompProperties" />
+    </comps>
+    <tradeNeverStack>true</tradeNeverStack>
+    <resourceReadoutPriority>Middle</resourceReadoutPriority>
+    <stackLimit>1</stackLimit>
+    <useHitPoints>true</useHitPoints>
+    <modExtensions>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+        </researchTypes>
+        <ResearchSize>        
+        </ResearchSize>
+      </li>
+    </modExtensions>
+  </ThingDef>
+</Defs>

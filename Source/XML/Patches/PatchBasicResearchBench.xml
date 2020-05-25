@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="SimpleResearchBench"]</xpath>
+    <value>
+      <comps></comps>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="SimpleResearchBench"]/comps</xpath>
+    <value>
+      <li Class="CompProperties_AffectedByFacilities">
+        <linkableFacilities>
+          <li>TestComputerObj</li>
+        </linkableFacilities>
+      </li>
+    </value>
+  </Operation>
+  <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="HiTechResearchBench"]/comps/li[3]/linkableFacilities</xpath>
+    <value>
+      <li>TestComputerObj</li>
+    </value>
+  </Operation>
+</Patch>
+
+

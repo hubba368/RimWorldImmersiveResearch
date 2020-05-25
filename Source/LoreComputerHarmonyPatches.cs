@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -19,17 +19,19 @@ namespace ImmersiveResearch
         None,
         Biological,
         Mechanical,
+        Textiles,
+        Cultural,
         Construction,
         Metallurgy,
         Carpentry,
         Weaponry,
-        Apparel,
         Masonry,
         Electrical,
         Medical,
         Spacecraft,
         Advanced,
         Spacer,
+        Ultra,
         Mod
     }
 
@@ -42,7 +44,7 @@ namespace ImmersiveResearch
         Unknown,
         None
     }
-
+    // potential todo: make this inherit ILoadReferenceable to make it easier to scribe?
     public class ImmersiveResearchProject
     {
         ResearchProjectDef _projectDef;
@@ -136,7 +138,7 @@ namespace ImmersiveResearch
 
 
     /// <summary>
-    /// Class that uses Harmony to inject custom code into RimWorld code at runtime.
+    /// Class that uses Harmony to inject custom code into RimWorld code.
     /// </summary>
     [StaticConstructorOnStartup]
     static class LoreComputerHarmonyPatches
@@ -145,20 +147,18 @@ namespace ImmersiveResearch
         private static float _neolithicProbability = 40.0f;
         private static float _medievalProbability = 20.0f;
         private static float _industrialProbability = 10.0f;
-        private static float _spacerProbability = 5.0f;
+        private static float _spacerAndAboveProbability = 5.0f;
         private static float _rareDatadiskProbability = 50.0f;
         private static float _superRareDatadiskProbability = 5.0f;
 
-        public static List<ResearchProjectDef> TempResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
+        public static List<ResearchProjectDef> FullConcreteResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
 
         public static ResearchDict UndiscoveredResearchList;
         
-        
-        public static Dictionary<int, string> DatadiskUniqueDescriptions = new Dictionary<int, string>(); // dictionary of in game datadisks unique IDs that point to randomly chosen descriptions.
-
         static LoreComputerHarmonyPatches()
         {          
-            var harmony = HarmonyInstance.Create("rimworld.mods.immersiveresearch");
+           
+            var harmony = new Harmony("rimworld.mods.immersiveresearch");
 
             // new game initialisation
             MethodInfo NewGameResearchTargetMethod = AccessTools.Method(typeof(GameComponentUtility), "StartedNewGame");
@@ -172,7 +172,7 @@ namespace ImmersiveResearch
 
             harmony.Patch(LoadGameResearchTargetMethod, null, LoadGameResearchPatchMethod);
 
-            // Lore Database float menu
+            // Datadisk analyzer float menu
             MethodInfo targetMethod = AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders");
             HarmonyMethod LorePostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddComputerDropDownMenu"));
 
@@ -184,51 +184,32 @@ namespace ImmersiveResearch
 
             harmony.Patch(researchTargetMethod, researchPrefixMethod, null);
 
-            // datadisk on ship trader stock
-            MethodInfo miscStockTargetMethod = AccessTools.Method(typeof(TradeShip), "GenerateThings");
-            HarmonyMethod miscStockPostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToStock"));
+            // patch of bill notify because currently unable to use overriden version on Experiment
+            harmony.Patch(AccessTools.Method(typeof(Bill_Production),
+                "Notify_IterationCompleted"), new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("NotifyExperimentIsCompleted")), null);
 
-            harmony.Patch(miscStockTargetMethod, null, miscStockPostfixMethod);
-
-            // bandit camp quest reward
-            MethodInfo banditCampTargetMethod = AccessTools.Method(typeof(IncidentWorker_QuestBanditCamp), "GenerateRewards");
-            HarmonyMethod bandCampPostfixMethod = new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToBanditQuestReward"));
-
-            harmony.Patch(banditCampTargetMethod, null, bandCampPostfixMethod);
-
-            // datadisk on mechanoid disassemble
-            harmony.Patch(AccessTools.Method(typeof(Thing), "ButcherProducts"),
-                new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToMechanoidLoot")),
-                null);
-
-            // datadisk destroy changes
-            harmony.Patch(AccessTools.Method(typeof(Thing), "Destroy"), null,
-                new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("RemoveDatadiskFromDict")));
-
-            // inspect window changes 
-            harmony.Patch(AccessTools.Method(typeof(StatsReportUtility), "DescriptionEntry", new Type[] { typeof(Thing)}), null,
-                new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("ModifyUniqueDatadiskInspectText")));
 
             // update research lists if using debug buttons
             harmony.Patch(AccessTools.Method(typeof(ResearchManager), "DebugSetAllProjectsFinished"), null,
                 new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddResearchToListIfDebugMode")));
 
-            // notify iteration completed on Bill_Production
-            harmony.Patch(AccessTools.Method(typeof(Bill_Production), 
-                "Notify_IterationCompleted"), new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("NotifyExperimentIsCompleted")), null);
-
-            //TEMPORARY: set FinishedExp research vals on MakeThing
+            // sends experiment type and size to finishedexperiment when finished production
             harmony.Patch(AccessTools.Method(typeof(GenRecipe), "MakeRecipeProducts"), null,
                 new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("SetFinishedExpOnMake")));
+
+            // sets a pawn as a colony researcher and adds experiment to list of authored products
+            harmony.Patch(AccessTools.Method(typeof(GenRecipe), "PostProcessProduct"), null,
+                new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("SetThingFromBill")));
 
 
             //unused methods for now 
 
-            // drop pod event update
-            /*harmony.Patch(AccessTools.Method(typeof(DropPodUtility), "DropThingsNear"), 
-                null, 
-                new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToDropPodEvent")));
-                */
+            // drop pod event update              
+            // datadisk on mechanoid disassemble
+            //harmony.Patch(AccessTools.Method(typeof(Thing), "ButcherProducts"),
+            //    new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToMechanoidLoot")),
+            //    null);
+                
 
         }
 
@@ -239,11 +220,11 @@ namespace ImmersiveResearch
             UndiscoveredResearchList = Current.Game.GetComponent<GameComponent_ImmersiveResearch>().MainResearchDict;
 
             UndiscoveredResearchList.MainResearchDict.Clear();
-            foreach (ResearchProjectDef proj in TempResearchList)
+            foreach (ResearchProjectDef proj in FullConcreteResearchList)
             {
                 if(UndiscoveredResearchList.MainResearchDict.ContainsKey(proj.defName))
                 {
-                    Log.Error("already contains key: " + proj.defName);
+                    //Log.Error("already contains key: " + proj.defName);
                     continue;
                 }
                 if (proj.IsFinished)
@@ -276,7 +257,7 @@ namespace ImmersiveResearch
                 }
             }
             // TODO Figure out why adding proj specific vals in constructor only works on some of the whole dictionary
-            foreach(ResearchProjectDef proj in TempResearchList)
+            foreach(ResearchProjectDef proj in FullConcreteResearchList)
             {
                 if (proj.IsFinished)
                 {
@@ -305,6 +286,12 @@ namespace ImmersiveResearch
 
             EmptyResearchGraphOfUndiscovered(DefDatabase<ResearchProjectDef>.AllDefsListForReading);
             GenerateAllBaseResearchWeightings();
+
+            // maybe improve tutorial ? 
+            Find.LetterStack.ReceiveLetter("Immersive Research - Datadisks","Immersive Research - Datadisks \n\nDatadisks are one way of obtaining new research projects and silver.\n\nYou can find datadisks by disassembling mechanoids, and from exotic traders.\n\nSome datadisks have interesting contents, click on them to see what they contain!", LetterDefOf.NeutralEvent);
+            Find.LetterStack.ReceiveLetter("Immersive Research - Experiments", "Immersive Research - Experiments \n\nExperiments are your main way of obtaining new research projects. You may notice that your research window is slightly 'empty'. Don't worry, it is intended with this mod!\n\nExperiments have categorised projects into two categories; 'size' and 'type'. You can choose various combinations to be able to pinpoint which kind of research project you wish to unlock.\n\nTo make this process more bearable, you are able to see how many projects of certain combinations you are able to unlock.", LetterDefOf.NeutralEvent);
+            Find.LetterStack.ReceiveLetter("Immersive Research - Studying", "Immersive Research - Studying \n\nAn important feature of this mod is a rudimentary education system. With a Study Table built, colonists will be able study finished experiments and be designated as a 'researcher'.\n\nColonists that are designated as researchers are extremely important, as they carry the colony's scientific knowledge. If your researchers die, you can lose progress on projects that they have knowledge of, even downright losing a project completely.\n\n The more researchers you have that have studied the same experiment, the less progress you will lose on that project. \n\nStudying experiments of research projects you have not discovered will discover them for you.", LetterDefOf.NeutralEvent);
+            Find.LetterStack.ReceiveLetter("Immersive Research - Filing Cabinet", "Immersive Research - Filing Cabinet \n\nTo make the process of storing experiments easier, you can construct a Filing Cabinet. This will store all of your finished experiments, and you will be able to retrieve specific experiments at any time.\n\n Be careful though, as losing the cabinet can mean the loss of all of your stored experiments!", LetterDefOf.NeutralEvent);
         }
 
 
@@ -315,7 +302,7 @@ namespace ImmersiveResearch
             UndiscoveredResearchList = Current.Game.GetComponent<GameComponent_ImmersiveResearch>().MainResearchDict;
             //loading r Types here until i can figure out a scribing workaround for nested lists
 
-            foreach (ResearchProjectDef proj in TempResearchList)
+            foreach (ResearchProjectDef proj in FullConcreteResearchList)
             {
                 if (proj.HasModExtension<ResearchDefModExtension>())
                 {
@@ -339,40 +326,122 @@ namespace ImmersiveResearch
 
         #region UTIL FUNCTIONS
 
-        // probable TODO: change Experiment to inherit from Bill so I can override Notify Function?
+        public static List<Thing> GetAllOfThingsOnMap(string defName)
+        {
+            List<Thing> result = null;
+
+            if (!(from t in DefDatabase<ThingDef>.AllDefs where t.defName == defName select t).TryRandomElement(out ThingDef finalDef))
+            {
+                Log.Error("Unable to locate " + defName + " in DefDatabase.", false);
+            }
+            else
+            {
+                var def = finalDef;
+                var req = ThingRequest.ForDef(def);
+                var thingList = new List<Thing>();
+                thingList = Find.CurrentMap.listerThings.ThingsMatching(req);
+
+                if (thingList.Count == 0)
+                {
+                    //Log.Error("No things found in colony.");
+                    return null;
+                }
+                result = thingList;
+               // Log.Error("Num of found things in colony: " + thingList.Count);
+            }
+            return result;
+        }
+
+
+        // TODO: figure out different way to call derived notify instead of using toils
+        // currently using this since cannot reliably call notify from workgiver
         public static void NotifyExperimentIsCompleted(Bill_Production __instance, ref Pawn billDoer)
         {
-            if(__instance.billStack.billGiver.LabelShort == "Experiment Bench")
+            Building_ExperimentBench expBench = __instance.billStack.billGiver.LabelShort == "Experiment Bench"? expBench = (Building_ExperimentBench)__instance.billStack.billGiver: null;
+            Building_StudyTable studyTable = __instance.billStack.billGiver.LabelShort == "Study Table" ? studyTable = (Building_StudyTable)__instance.billStack.billGiver : null;
+
+            if (expBench!=null)
             {
-                // delete the experiment instance from expStack when Bill is completed
-                Building_ExperimentBench bench = (Building_ExperimentBench)__instance.billStack.billGiver;
-                int index = bench.ExpStack.IndexOfBillToExp(billDoer.CurJob.bill);
-                Experiment Exp = bench.ExpStack[index];
-                bench.ExpStack.Delete(Exp);
+                int index = expBench.ExpStack.IndexOfBillToExp(__instance);
+                Experiment Exp = expBench.ExpStack.Experiments[index];
+                expBench.ExpStack.Delete(Exp);
+            }
+            if (studyTable != null)
+            {
+                int index = studyTable.ExpStack.IndexOfBillToExp(__instance);
+                Experiment Exp = studyTable.ExpStack.Experiments[index];
+                studyTable.ExpStack.Delete(Exp);
             }
         }
 
-        // Temp solution until i figure out how to send recipeDef vals to the Thing Objects
-        public static void SetFinishedExpOnMake(ref RecipeDef recipeDef)
+        // TODO: find potential way to not have to patch this?
+        //MakeRecipeProducts
+        public static void SetFinishedExpOnMake(ref RecipeDef recipeDef, ref Pawn worker, ref List<Thing> ingredients)
         {
-            if(recipeDef.ProducedThingDef.defName == "FinishedExperiment")
+            if (recipeDef.ProducedThingDef != null)
+            {              
+                if (recipeDef.ProducedThingDef.defName == "FinishedExperiment")
+                {               
+                    // check if we are studying an experiment instead of making one
+                    // if research is not discovered, discover it
+                    if(recipeDef.defName == "StudyFinishedExperiment")
+                    {
+                        if (ingredients[0].def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment != "")
+                        {
+                            var thingcomp = ingredients[0].TryGetComp<ResearchThingComp>();
+                            ingredients[0].def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment = thingcomp.researchDefName;
+                            recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ExperimentHasBeenMade = true;
+                            Current.Game.GetComponent<GameComponent_ImmersiveResearch>().MainResearchDict.MainResearchDict[thingcomp.researchDefName].IsDiscovered = true;
+                        }
+                    }
+                    else
+                    {
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.Clear();
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = ResearchSizes.None;
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment = "";
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ExperimentHasBeenMade = false;
+
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.AddRange(recipeDef.GetModExtension<ResearchDefModExtension>().researchTypes);
+                        recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = recipeDef.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    }
+                }
+            }
+
+        }
+
+        //PostProcessProduct
+        public static void SetThingFromBill(ref Thing product, ref Pawn worker)
+        {
+            if(product.def.defName == "FinishedExperiment")
             {
-                recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.Clear();
-                recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = ResearchSizes.None;
-                recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.AddRange(recipeDef.GetModExtension<ResearchDefModExtension>().researchTypes);
-                recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = recipeDef.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                var tempComp = product.TryGetComp<ResearchThingComp>();
+
+                if (tempComp != null)
+                {
+                    tempComp.AddResearch(product.def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment);
+                    tempComp.AddPawnAuthor(worker.Name.ToString());
+                    Current.Game.GetComponent<GameComponent_ImmersiveResearch>().AddColonyExperimentToPawn(tempComp.pawnExperimentAuthorName, tempComp.researchDefName);
+
+                    var tempHediff = HediffMaker.MakeHediff(ResearchHediffDefOf.ResearchHediff, worker, null);
+                    worker.health.AddHediff(tempHediff);
+                }
+                else
+                { 
+                    Log.Error("Could not get ResearchComp.");
+                }
+
             }
         }
 
         // patches the 'Complete all research' debug mode button.
         public static void AddResearchToListIfDebugMode()
         {
-            for(int i = 0; i < TempResearchList.Count; i++)
+            for(int i = 0; i < FullConcreteResearchList.Count; i++)
             {
-                if(UndiscoveredResearchList.MainResearchDict[TempResearchList[i].defName].IsDiscovered == false)
+                if(UndiscoveredResearchList.MainResearchDict[FullConcreteResearchList[i].defName].IsDiscovered == false)
                 {
-                    AddNewResearch(TempResearchList[i].defName);
-                    Find.ResearchManager.FinishProject(TempResearchList[i]);
+                    AddNewResearch(FullConcreteResearchList[i].defName);
+                    Find.ResearchManager.FinishProject(FullConcreteResearchList[i]);
                 }
             }
         }
@@ -402,39 +471,6 @@ namespace ImmersiveResearch
 
         #region DATADISK RELATED FUNCTIONS
 
-        //postfix patch of Thing.Destroy
-        public static void RemoveDatadiskFromDict(Thing __instance)
-        {
-            if(__instance.def.defName == "UselessDatadisk" || __instance.def.defName == "ValuableDatadisk")
-            {
-                Log.Error("destruction ID " + __instance.thingIDNumber.ToString());
-                DatadiskUniqueDescriptions.Remove(__instance.thingIDNumber-2);
-            }
-        }
-
-        // postfix patch of Inspection window text generation
-        public static void ModifyUniqueDatadiskInspectText(ref Thing thing, StatDrawEntry __result)
-        {
-            if (!thing.DestroyedOrNull())
-            {
-                //Log.Error("thing ID: " + thing.thingIDNumber);
-                if (thing.def.defName == "UselessDatadisk" || thing.def.defName == "ValuableDatadisk")
-                {
-                    if(DatadiskUniqueDescriptions.ContainsKey(thing.thingIDNumber-2))
-                    {
-                        //Log.Error("desc edit ID " + thing.thingIDNumber.ToString());
-                        //Log.Error(DatadiskUniqueDescriptions[thing.thingIDNumber - 2]);
-                        __result.overrideReportText = DatadiskUniqueDescriptions[thing.thingIDNumber - 2];
-                    }
-                    else
-                    {
-                        __result.overrideReportText = "stop cheating";
-                    }
-                }
-            }
-        }
-
-
         public static Thing ChooseDataDiskTypeOnDecrypt()
         {
             // choose datadisk at random weighting
@@ -452,7 +488,6 @@ namespace ImmersiveResearch
             return CreateDataDiskThing("UselessDatadisk");
         }
 
-
         private static Thing CreateDataDiskThing(string thingDefName)
         {          
             ThingDef dataDef = null;
@@ -465,14 +500,9 @@ namespace ImmersiveResearch
             {
                 dataDef = finalDef;
             }
-            // appears that Thing unique ID is offset by +2 at some point after creation
+
             Thing datadisk = ThingMaker.MakeThing(dataDef);
 
-            if (datadisk.def.defName != "LockedDatadisk" && datadisk.def.defName != "ResearchDataDisk")
-            {
-                DatadiskUniqueDescriptions.Add(datadisk.thingIDNumber, datadisk.def.description + " " + GenerateRandomDatadiskDescription(datadisk));                
-            }
-                            
             return datadisk;
         }
 
@@ -509,15 +539,12 @@ namespace ImmersiveResearch
         }
 
 
-        private static string GenerateRandomDatadiskDescription(Thing datadisk)
+        public static string GenerateRandomDatadiskDescription(Thing datadisk)
         {
-            // generate a random description from xml files depending on datadisk type.
-            // we also need to check whether mod is installed locally or through steam workshop.
             XDocument descList;
             IEnumerable<string> results;
             string description = "";
             string relativePath = GetModFilePath();
-
 
             switch (datadisk.def.defName)
             {
@@ -538,31 +565,13 @@ namespace ImmersiveResearch
         }
 
         // prefix patch of Thing.ButcherProducts
+        // delete this (test first)
         public static void AddDataDiskToMechanoidLoot(Thing __instance)
         {
             if (__instance.def.race.FleshType == FleshTypeDefOf.Mechanoid)
             {
                 __instance.def.butcherProducts.Add(new ThingDefCountClass(CreateDataDiskThing("LockedDatadisk").def, 1));
             }
-        }
-
-        // postfix patch of TradeShip.GenerateThings
-        public static void AddDatadiskToStock(TradeShip __instance)
-        {
-            // not sure if we need to edit ship stocks as they are auto added to stocks via XML tags
-            __instance.Goods.Add<Thing>(CreateDataDiskThing("LockedDatadisk"));
-        }
-
-        // postfix patch of Bandit camp reward generation
-        public static void AddDataDiskToBanditQuestReward(List<Thing> __result)
-        {
-            __result.Add(CreateDataDiskThing("LockedDatadisk"));
-        }
-
-        
-        public static void AddDataDiskToDropPodEvent(ref IEnumerable<Thing> things)
-        {
-            things.Add(CreateDataDiskThing("LockedDatadisk"));
         }
 
         #endregion
@@ -577,7 +586,7 @@ namespace ImmersiveResearch
             }
         }
 
-        public static void SelectResearchByWeightingAndType(List<ResearchProjectDef> projs)
+        public static string SelectResearchByWeightingAndType(List<ResearchProjectDef> projs)
         {// TODO improve this 
             // maybe regen old base weightings after selection
             List<ImmersiveResearchProject> tempList = new List<ImmersiveResearchProject>();
@@ -587,14 +596,14 @@ namespace ImmersiveResearch
                 tempList.Add(UndiscoveredResearchList.MainResearchDict[projs[i].defName]);
             }
 
-            AddNewResearch(SelectResearchByUniformCumulativeProb(tempList));
+            return AddNewResearch(SelectResearchByUniformCumulativeProb(tempList));
         }
 
         private static void GenerateAllBaseResearchWeightings()
         {
-            for(int i = 0; i < TempResearchList.Count; i++)
+            for(int i = 0; i < FullConcreteResearchList.Count; i++)
             {
-                ResearchProjectDef currentProj = TempResearchList[i];
+                var currentProj = FullConcreteResearchList[i];
                 float weight = GenerateBaseResearchWeighting(currentProj);
                 UndiscoveredResearchList.MainResearchDict[currentProj.defName].Weighting = weight; 
             }
@@ -634,7 +643,7 @@ namespace ImmersiveResearch
                     projWeighting += _industrialProbability;
                     break;
                 case TechLevel.Spacer:
-                    projWeighting += _spacerProbability;
+                    projWeighting += _spacerAndAboveProbability;
                     break;
                 default:
                     break;
@@ -663,7 +672,8 @@ namespace ImmersiveResearch
                 if (finalTotal > randVal)
                 {
                     //Log.Error("Final Weighting " + finalTotal.ToString());
-                    //Log.Error("Research Selected " + projs[index].ProjectDef.defName);
+                   // Log.Error("Research Selected " + projs[index].ProjectDef.defName);
+
                     result = projs[index].ProjectDef.defName;
                     break;
                 }
@@ -672,32 +682,23 @@ namespace ImmersiveResearch
             return result;
         }
 
-
-        public static void ApplyBlindResearch(ref ResearchProjectDef proj)
-        {// unused atm
-            if(proj.defName == "BlindResearch")
-            {
-                //SelectItemByUniformCumulativeProb();
-                proj.baseCost += 500f;
-            }
-        }
-
-
-        public static void AddNewResearch(string researchName)
+        public static string AddNewResearch(string researchName)
         {
             //Log.Error("New research name: " + researchName, false);
             Find.LetterStack.ReceiveLetter("New Research Discovered", "A new research project has been discovered. We have discovered " + researchName + ".", LetterDefOf.PositiveEvent);
-            FillResearchGraph(researchName);
+            AddNewResearchToGraph(researchName);
+            return researchName;
         }
 
         // prefix patch of ResearchWindow DrawRightRect function
         // UI update function called on the righthand research window when it is opened.
+        // TODO: maybe overhaul window completely?
         public static void UpdateResearchGraph()
         {
             List<ResearchProjectDef> researchDatabaseRef = DefDatabase<ResearchProjectDef>.AllDefsListForReading;
             // empty the research graph every time we open the research window if we need to
 
-            if (researchDatabaseRef.Count() < TempResearchList.Count())
+            if (researchDatabaseRef.Count() < FullConcreteResearchList.Count())
             {
                 EmptyResearchGraphOfUndiscovered(researchDatabaseRef);
             }
@@ -708,26 +709,25 @@ namespace ImmersiveResearch
             }
         }
 
-
+        // TODO: make 'undiscoveredResearchDef' and insert into DefDatabase to take place of removed research buttons
+        // give the def a name of ??? and desc of some kinda undiscovered lore text
+        // CANT BE DONE WITHOUT SIGNIFICANT CHANGES TO RESEARCH WINDOW: WILL PROBS REQUIRE COMPLETE OVERHAUL TO DO
         private static bool EmptyResearchGraphOfUndiscovered(List<ResearchProjectDef> Rlist)
         {
 
             for (int index = 0; index < Rlist.Count; ++index)
             {
-                ResearchProjectDef researchProjectDef = Rlist[index];
-
                 if (UndiscoveredResearchList.MainResearchDict.ContainsKey(Rlist[index].defName) && UndiscoveredResearchList.MainResearchDict[Rlist[index].defName].IsDiscovered == false)
                 {
-                    //Log.Error("remving from list");
                     Rlist.RemoveAt(index);
                 }
             }
             return true;
         }
 
-        private static void FillResearchGraph(string researchName)
+        private static void AddNewResearchToGraph(string researchName)
         {
-            var ResearchToAdd = TempResearchList.Where(item => item.defName == researchName);
+            var ResearchToAdd = FullConcreteResearchList.Where(item => item.defName == researchName);
 
             foreach (ResearchProjectDef proj in ResearchToAdd)
             {
@@ -738,7 +738,7 @@ namespace ImmersiveResearch
             ImmersiveResearchProject newValues = new ImmersiveResearchProject(UndiscoveredResearchList.MainResearchDict[researchName].ProjectDef, true, UndiscoveredResearchList.MainResearchDict[researchName].Weighting, UndiscoveredResearchList.MainResearchDict[researchName].ResearchTypes, UndiscoveredResearchList.MainResearchDict[researchName].ResearchSize);
             UndiscoveredResearchList.MainResearchDict[researchName] = newValues;
 
-            //Log.Error("Is new research discovered: " + UndiscoveredResearchList.MainResearchDict[researchName], false);
+            //Log.Error("New research added to main graph: " + UndiscoveredResearchList.MainResearchDict[researchName], false);
         }
         #endregion
 
@@ -758,30 +758,128 @@ namespace ImmersiveResearch
             return targetParams;
         }
 
+        private static TargetingParameters AccessFilingCabinet()
+        {
+            var targetParams = new TargetingParameters
+            {
+                validator = x => x.Thing is Building_ExperimentFilingCabinet building
+            };
+            return targetParams;
+        }
+
         // postfix patch of Drop down menu function
-        // Creates a drop down menu when you right click on a specific target.
         public static void AddComputerDropDownMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
-            // check against our custom target parameters that we are clicking what we need to click on
-            foreach (var localTargetInfo4 in GenUI.TargetsAt(clickPos, AccessComputer(), true))
+            DatadiskAnalyzerFloatMenu(clickPos, pawn, opts);
+            FilingCabinetFloatMenu(clickPos, pawn, opts);
+        }
+
+        // TODO: VERY HACKY IMPLEMENTATION PLS FIND A WORKAROUND
+        // really dont wanna use a static var to store a requested thing
+        // find a way to pass params to jobdrivers
+        public static Thing TempRequestedExp;
+
+        private static void FilingCabinetFloatMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
+        {
+            foreach (var localTargetInfo4 in GenUI.TargetsAt_NewTemp(clickPos, clickParams: AccessFilingCabinet(), thingsOnly: true))
             {
                 var destination = localTargetInfo4;
-                if(pawn.CanReach(destination, Verse.AI.PathEndMode.OnCell, Danger.Deadly) == false)
+                if (pawn.CanReach(destination, Verse.AI.PathEndMode.OnCell, Danger.Deadly) == false)
                 {
                     opts.Add(new FloatMenuOption("Cannot Reach" + " (" + "NoPath".Translate() + ")", null));
                 }
-                // maybe add else if if pawn research skill is too low (i.e. too dumb)
+                else
+                {
+                    var cabinet = destination.Thing as Building_ExperimentFilingCabinet;
+
+                    bool CheckIfAnyExperimentsStored()
+                    {
+                        if(cabinet.ListCount == 0)
+                        {
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    void AddExperimentAction()
+                    {// TODO fix null ref occuring if no exps exist, cant find actual reason why
+                        if (GetAllOfThingsOnMap("FinishedExperiment")== null)
+                        {
+                            Messages.Message("No Finished Experiments located in colony.", cabinet, MessageTypeDefOf.RejectInput, historical: false);
+                        }
+                        else
+                        {
+                            var job = JobMaker.MakeJob(AddExperimentJobDefOf.CabinetAddExperiment, cabinet);
+                            job.playerForced = true;
+                            job.count = 1;//GetAllOfThingsOnMap("FinishedExperiment").Count;
+                            pawn.jobs.TryTakeOrderedJob(job);                          
+                        }
+
+                    };
+
+                    var label = "Add all experiments to cabinet";
+                    var action = (Action)AddExperimentAction;
+                    var priority = MenuOptionPriority.InitiateSocial;
+                    var thing = destination.Thing;
+
+                    opts.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(label, action, priority, null, thing), pawn, cabinet));
+
+
+                    void TakeExperimentAction()
+                    {
+                        if (!CheckIfAnyExperimentsStored())
+                        {
+                            Messages.Message("No Finished Experiments stored in cabinet.", cabinet, MessageTypeDefOf.RejectInput, historical: false);
+                        }
+                        else
+                        {
+                            var job = JobMaker.MakeJob(TakeExperimentJobDefOf.CabinetTakeExperiment, cabinet);
+                            job.playerForced = true;
+                            pawn.jobs.TryTakeOrderedJob(job);                          
+                        }
+                    };
+
+                    if (CheckIfAnyExperimentsStored())
+                    {
+                        foreach (var exp in cabinet.CabinetThings)
+                        {
+                            var temp = exp.Value as Thing_FinishedExperiment;
+                            var label2 = "Take " + temp.TryGetComp<ResearchThingComp>().researchDefName + " Experiment";
+                            var action2 = (Action)TakeExperimentAction;
+                            var priority2 = MenuOptionPriority.InitiateSocial;
+                            var thing2 = destination.Thing;
+
+                            TempRequestedExp = exp.Value;
+
+                            opts.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(label2, action2, priority2, null, thing2), pawn, cabinet));
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void DatadiskAnalyzerFloatMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
+        {
+            // check against our custom target parameters that we are clicking what we need to click on
+            foreach (var localTargetInfo4 in GenUI.TargetsAt_NewTemp(clickPos, clickParams: AccessComputer(), thingsOnly: true))
+            {
+                var destination = localTargetInfo4;
+                if (pawn.CanReach(destination, Verse.AI.PathEndMode.OnCell, Danger.Deadly) == false)
+                {
+                    opts.Add(new FloatMenuOption("Cannot Reach" + " (" + "NoPath".Translate() + ")", null));
+                }
+                // Possible TODO: add extra conditionals based on pawn skill levels
                 else
                 {
                     var pawnTarget = (Building_LoreComputer)destination.Thing;
 
                     bool CheckIfAllResearchDone()
                     {
-                        int maxNumOfResearches = TempResearchList.Count();
+                        int maxNumOfResearches = FullConcreteResearchList.Count();
                         int counter = 1;
                         for (int i = 0; i < UndiscoveredResearchList.MainResearchDict.Count(); i++)
                         {
-                            if(UndiscoveredResearchList.MainResearchDict.ElementAt(i).Value.IsDiscovered == true)
+                            if (UndiscoveredResearchList.MainResearchDict.ElementAt(i).Value.IsDiscovered == true)
                             {
                                 counter++;
                             }
@@ -811,18 +909,18 @@ namespace ImmersiveResearch
                         }
                         if (pawnTarget.GetLocationOfOwnedThing("ResearchDatadisk") == null)
                         {
-                            Messages.Message("No Research Disks are owned in colony.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
+                            Messages.Message("No Research disks are owned in colony.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
                         }
                         else if (CheckIfAllResearchDone())
                         {
-                            Messages.Message("All Research options are already completed.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
+                            Messages.Message("All research options are already completed.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
                         }
                         else
                         {
-                            var job = new Job(LoreResearchDiskDefOf.LoreResearchDiskDef, pawnTarget);
+                            var job = JobMaker.MakeJob(LoreResearchDiskDefOf.LoreResearchDiskDef, pawnTarget);
                             job.playerForced = true;
                             pawn.jobs.TryTakeOrderedJob(job);
-                        }                       
+                        }
                     }
 
                     // locked disks
@@ -830,7 +928,7 @@ namespace ImmersiveResearch
                     {
                         if (pawnTarget.GetLocationOfOwnedThing("LockedDatadisk") == null)
                         {
-                            Messages.Message("No Encrypted Datadisks are owned in colony.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
+                            Messages.Message("No Encrypted datadisks are owned in colony.", pawnTarget, MessageTypeDefOf.RejectInput, historical: false);
                         }
                         if (!pawnTarget.CheckIfLinkedToResearchBench())
                         {
@@ -842,14 +940,14 @@ namespace ImmersiveResearch
                         }
                         else
                         {
-                            var job = new Job(LoreDataDiskDefOf.LoreDataDiskDef, pawnTarget);
+                            var job = JobMaker.MakeJob(LoreDataDiskDefOf.LoreDataDiskDef, pawnTarget);
                             job.playerForced = true;
                             pawn.jobs.TryTakeOrderedJob(job);
                         }
                     }
 
                     // create the drop down menu button and functionality
-                    var label = "Load Research Disk";
+                    var label = "Load Research Datadisk";
                     var action = (Action)Action4;
                     var priority = MenuOptionPriority.InitiateSocial;
                     var thing = destination.Thing;
@@ -862,9 +960,10 @@ namespace ImmersiveResearch
                     var thing2 = destination.Thing;
 
                     opts.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(label2, action2, priority2, null, thing2), pawn, pawnTarget));
-                }              
+                }
             }
         }
+
         #endregion
     }
 }

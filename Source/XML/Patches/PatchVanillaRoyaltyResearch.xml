@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="NobleApparel"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Textiles</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="RoyalApparel"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Textiles</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Harp"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Cultural</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Harpsichord"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Cultural</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Piano"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Cultural</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="BrainWiring"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacer</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SpecializedLimbs"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacer</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="CompactWeaponry"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacer</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="VenomSynthesis"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Spacer</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ArtificialMetabolism"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="NeuralComputation"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="SkinHardening"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="HealingFactors"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="FleshShaping"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="MolecularAnalysis"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="CircadianInfluence"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="CataphractArmor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Ultra</li>
+        </researchTypes>
+        <ResearchSize>
+          Large
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+  
+</Patch>

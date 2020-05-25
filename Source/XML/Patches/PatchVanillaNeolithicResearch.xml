@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+<Operation Class="PatchOperationAddModExtension">
+  <xpath>/Defs/ResearchProjectDef[defName="PsychoidBrewing"]</xpath>
+  <value>
+    <li Class="ImmersiveResearch.ResearchDefModExtension">
+      <researchTypes>
+        <li>Biological</li>
+      </researchTypes>
+      <ResearchSize>
+        Small
+      </ResearchSize>
+    </li>
+  </value>
+</Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="TreeSowing"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Brewing"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ComplexFurniture"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Construction</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PassiveCooler"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Construction</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Stonecutting"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Masonry</li>
+          <li>Construction</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="ComplexClothing"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Textiles</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Cocoa"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Devilstrand"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="CarpetMaking"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Textiles</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Pemmican"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Smithing"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Metallurgy</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="RecurveBow"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Carpentry</li>
+	  <li>Weaponry</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="DrugProduction"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+          <li>Medical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PsychiteRefining"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+          <li>Medical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="WakeUpProduction"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+          <li>Medical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="GoJuiceProduction"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+          <li>Medical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PenoxycylineProduction"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Biological</li>
+          <li>Medical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="LongBlades"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Metallurgy</li>
+	  <li>Weaponry</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="PlateArmor"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Metallurgy</li>
+	  <li>Weaponry</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+
+  <Operation Class="PatchOperationAddModExtension">
+    <xpath>/Defs/ResearchProjectDef[defName="Greatbow"]</xpath>
+    <value>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Carpentry</li>
+	  <li>Weaponry</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </value>
+  </Operation>
+</Patch>

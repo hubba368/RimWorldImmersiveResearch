@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <RecipeDef>
+    <defName>StudyFinishedExperiment</defName>
+    <label>study finished experiment</label>
+    <description>Colonists can study completed experiments to raise their intellectual skills and to reduce the chances of information losses.</description>
+    <jobString>Studying finished experiment.</jobString>
+    <workAmount>1750</workAmount>
+    <workSpeedStat>ResearchSpeed</workSpeedStat>
+    <effectWorking>Smelt</effectWorking>
+    <soundWorking>Recipe_Smelt</soundWorking>
+    <ingredients>
+      <li>
+        <filter>
+          <thingDefs>
+            <li>FinishedExperiment</li>
+          </thingDefs>
+        </filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <products>
+      <FinishedExperiment>1</FinishedExperiment>
+    </products>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>FinishedExperiment</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <modExtensions>
+      <li Class="ImmersiveResearch.ResearchDefModExtension">
+        <researchTypes>
+          <li>Mechanical</li>
+        </researchTypes>
+        <ResearchSize>
+          Small
+        </ResearchSize>
+      </li>
+    </modExtensions>
+  </RecipeDef>
+
+</Defs>

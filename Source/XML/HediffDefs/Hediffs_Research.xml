@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HediffDef>
+		<defName>ResearchHediff</defName>
+		<label>Colony Researcher</label>
+		<description>This colonist is an author of one or more experiments. Keep them safe to ensure your colony does not lose valuable knowledge!</description>
+		<hediffClass>ImmersiveResearch.Hediff_ResearchComp</hediffClass>
+		<defaultLabelColor>(0.8, 0.2, 0.2)</defaultLabelColor>
+	</HediffDef>
+</Defs>

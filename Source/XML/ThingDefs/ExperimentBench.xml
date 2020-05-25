@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef ParentName="BenchBase">
+    <defName>ExperimentBench</defName>
+    <label>Experiment Bench</label>
+    <description>Perform experiments on resources to unlock new knowledge.</description>
+    <thingClass>ImmersiveResearch.Building_ExperimentBench</thingClass>
+    <graphicData>
+      <texPath>Things/Building/ExperimentBench/ExpBench</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(3.5,1.5)</drawSize>
+      <shadowData>
+        <volume>(2.8, 0.3, 0.54)</volume>
+        <offset>(0, 0, -0.18)</offset>
+      </shadowData>
+      <damageData>
+        <cornerTR>Damage/Corner</cornerTR>
+        <cornerBR>Damage/Corner</cornerBR>
+      </damageData>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>70</pathCost>
+    <blockWind>true</blockWind>
+    <fillPercent>0.8</fillPercent>
+    <useHitPoints>True</useHitPoints>
+    <statBases>
+      <MaxHitPoints>150</MaxHitPoints>
+      <WorkToBuild>2500</WorkToBuild>
+      <Flammability>0.7</Flammability>
+      <Beauty>2</Beauty>
+    </statBases>
+    <tickerType>Rare</tickerType>
+    <canOverlapZones>false</canOverlapZones>
+    <size>(3,1)</size>
+    <selectable>true</selectable>
+    <rotatable>true</rotatable>
+    <designationCategory>Production</designationCategory>
+    <costList>
+      <WoodLog>120</WoodLog>
+      <Steel>30</Steel>
+    </costList>
+    <hasInteractionCell>True</hasInteractionCell>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <constructEffect>ConstructWood</constructEffect>
+    <killedLeavings>
+      <ChunkSlagSteel>1</ChunkSlagSteel>
+    </killedLeavings>
+    <inspectorTabs>
+      <li>ImmersiveResearch.ITab_Experiments</li>
+    </inspectorTabs>
+    <recipes>
+      <li>SmallMechanicalResearch</li>
+    </recipes>
+  </ThingDef>
+
+</Defs>

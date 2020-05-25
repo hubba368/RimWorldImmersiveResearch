@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Source>
+  <string-array name="descriptions">
+    <item>It contains a starchart. It has several marked points of interest in a far-off system.</item>
+    <item>It contains ancient launch records and shipping manifests for a defunct asteroid mining corporation.</item>
+    <item>It contains a pre-authorised transfer of several Glitterworld currencies to this datadisk, pending approval.</item>
+    <item>It contains a scanned image of various indecipherable symbols. A cursory glance appears to show some kind of humanoid lifeform pointing towards an unknown galaxy.</item>
+    <item>It contains an old archotech schematic for 'Scyther' class Mechanoid Scout Units.</item>
+    <item>It contains an old map pointing to a vault of silver and gold. It is unknown whether this map is still accurate.</item>
+    <item>It contains an old research paper on the potential application of mind control with joywire technology.</item>
+    <item>It contains security access codes for aquatic arcologies of the \u003CDATA CORRUPTED\u003E system.</item>
+    <item>It contains an old archotech field analysis report on temporal dilation on local wildlife.</item>
+    <item>It contains a starchart showing high traffic shipping routes throughout various Urbworld colonies.</item>
+    <item>It contains one large text file titled: 'Designing Games: A Guide to Engineering Experiences'.</item>
+    <item>It contains various autopsy files on Boomalopes and Boomrats.</item>
+    <item>It contains a high profile shipping route for Ambrosia.</item>
+    <item>It contains a scanned image of a tattered document. Of what text is readable, it appears to be designs for a metallic piece of headgear that can effectively lessen psychic effects on the wearer.</item>
+    <item>This datadisk appears to contain the base blueprint of a 'Subpersona' level artifical intelligence.</item>
+    <item>This datadisk contains the bank account details of a high profile Glitterworld official.</item>
+    <item>This datadisk contains blueprints for various types of powered armour. Most of the important details are corrupted.</item>
+    <item>This datadisk contains various text files. At a cursory glance, the text files appear to contain research notes on UFO crashsites.</item>
+    <item>This datadisk contains construction techniques for building biodome structures. Unfortunately, it appears they require resources that are not available on this world.</item>
+    <item>This datadisk contains a single video file. The video is from the point of view of the helmet camera of a Glitterworld soldier, and appears to show the squad of soldiers being attacked by unknown humanoid entities. The video ends with the entire squad being wiped out.</item>
+    <item>This datadisk contains a large text file. It appears to be a fringe research paper on the application of consciouness transfer into robotic frames.</item>
+    <item>This datadisk contains security camera footage of a Glitterworld soldier interrogating a space pirate. The pirate relinquishes details on various pirate outposts in multiple star systems.</item>
+    <item>This datadisk contains multiple executable files. They appear to be homebrew software for breaking through Urbworld security doors.</item>
+    <item>This datadisk contains a schematic for an experimental railgun-type weapon. It appears the weapon would require a microfusion power source.</item>
+    <item>This datadisk contains a series of text files. These files appear to be military reports on common mechanoid tactics and behaviours.</item>
+    <item>This datadisk contains scanned images of common military doctrines for Glitterworld marine forces.</item>
+  </string-array>
+  
+</Source>

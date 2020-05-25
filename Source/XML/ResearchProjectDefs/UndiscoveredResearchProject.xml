@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ResearchProjectDef>
+    <defName>UndiscoveredProject</defName>
+    <label>unknown project</label>
+    <description>Your researchers are unable to determine what this project entails. Perform an experiment to attempt to determine what it could be.</description>
+    <baseCost>1000000</baseCost>
+    <techLevel>Neolithic</techLevel>
+    <researchViewX>0.00</researchViewX>
+    <researchViewY>1.40</researchViewY>
+  </ResearchProjectDef>
+
+</Defs>

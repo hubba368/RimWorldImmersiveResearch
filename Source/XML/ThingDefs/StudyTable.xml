@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <ThingDef ParentName="BenchBase">
+    <defName>StudyTable</defName>
+    <label>Study Table</label>
+    <description>Study experiments here to increase your colony's collective knowledge.</description>
+    <thingClass>ImmersiveResearch.Building_StudyTable</thingClass>
+    <graphicData>
+      <texPath>Things/Building/StudyTable/StudyTable</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1,1)</drawSize>
+     <damageData>
+        <rect>(0.05,0.05,0.95,0.95)</rect>
+      </damageData>
+    </graphicData>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>70</pathCost>
+    <blockWind>true</blockWind>
+    <fillPercent>0.8</fillPercent>
+    <useHitPoints>True</useHitPoints>
+    <statBases>
+      <MaxHitPoints>150</MaxHitPoints>
+      <WorkToBuild>1500</WorkToBuild>
+      <Flammability>0.7</Flammability>
+      <Beauty>2</Beauty>
+    </statBases>
+    <tickerType>Rare</tickerType>
+    <canOverlapZones>false</canOverlapZones>
+    <size>(1,1)</size>
+    <selectable>true</selectable>
+    <rotatable>false</rotatable>
+    <designationCategory>Production</designationCategory>
+    <costList>
+      <WoodLog>120</WoodLog>
+    </costList>
+    <hasInteractionCell>True</hasInteractionCell>
+    <interactionCellOffset>(0,0,-1)</interactionCellOffset>
+    <constructEffect>ConstructWood</constructEffect>
+    <constructionSkillPrerequisite>1</constructionSkillPrerequisite>
+    <inspectorTabs>
+      <li>ImmersiveResearch.ITab_Study</li>
+    </inspectorTabs>
+    <recipes>
+      <li>StudyFinishedExperiment</li>
+    </recipes>
+  </ThingDef>
+
+</Defs>

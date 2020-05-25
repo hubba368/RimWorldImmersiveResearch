@@ -1,11 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>Lore Friendly Wiki - Dev Build</name>
+	<name>Immersive-ish Research</name>
 	<author>hubba368</author>
 	<supportedVersions>
-    <li>1.0</li>
-  </supportedVersions>
-	<description>test 
-(This is the dev version of Lore Friendly Wiki. The release version of About.xml is available for editing at About/About-Release.xml. Edits made on this file or on the temporary About/About.xml won't show up on the release version. Use VisualStudio to build a "Release" version of this mod when ready to upload your mod!)</description>
+	<li>1.0</li>
+	<li>1.1</li>
+	</supportedVersions>
+	<packageId>hubba368.ImmersiveishResearch</packageId>
+	<description>
+If you've ever wondered how your crashlanded tunnel-dwelling illiterates are able to know how and what to research, then this is probably the mod for you.
+
+This mod makes quite a few changes to the research portion of the game, and how research is progressed throughout the game.
+
+Features:
+
+Experiment System
+- Intellectual colonists can now perform research experiments into various scientific fields. These experiments, when completed, will unlock research projects based on the scientific field you choose, and the size of the experiment.
+- Experiments can be performed at a new Experiment Bench structure, which requires no research to build.
+- Each potential type of experiment you can perform have specific resource costs to be able to be completed. They are projects designed to be completed over time, and can be safely paused and resumed when needed.
+
+'Brain Drain' - Education System
+- Your colonists are able to 'study' completed experiments, which will mark them as 'researchers'.
+- Your colony researchers are the backbone of your colony's collective knowledge, and losing them can bring dire consequences.
+- If a researcher happens to die, the effects can range from loss of progress on research projects, all the way to losing them entirely.
+
+Experiment Filing Cabinet
+- To make the process of storing completed experiments more feasible, you are able to construct a filing cabinet building.
+- You can store and retrieve any experiment at any time.
+
+Ancient Datadisks
+- Scattered throughout the (rim)world are old Glitterworld datadisks, which must be decoded to discover their contents.
+- Datadisk contents can range from invaluable research data, all the way to completely useless and extremely valuable.
+- Random flavour text is added to some types of datadisks for better immersion.
+
+Datadisk Analyzer
+- This is a miscellaneous construct that links to either type of research bench, similar to the Multi-Analyzer. When sufficiently powered and connected, you will be able to decode any locked datadisks you own, and load any research disks you own.
+
+Research Progression
+- Locked research options are now hidden from view, and are only visible when unlocked via finishing experiments or loading research datadisks.
+	
+	
+	</description>
 	<url>https://steamcommunity.com/id/hubba368/myworkshopfiles/?appid=294100</url>
 </ModMetaData>
