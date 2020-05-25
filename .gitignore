@@ -4,12 +4,15 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 
-# miss assemblies file
+# miss mod files
 Assemblies/
 LoreFriendlyWiki.sln
 Source/LoreFriendlyWiki.csproj
 Source/Properties/
 Source/packages.config
+Common/
+v1.1--FinalReleaseDir
+LoadFolders.xml
 
 # User-specific files
 *.rsuser
