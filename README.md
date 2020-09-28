@@ -1,6 +1,6 @@
 # RimWorldImmersiveResearch
 
-![Version](https://img.shields.io/badge/Rimworld-1.1-brightgreen.svg)
+![Version](https://img.shields.io/badge/Rimworld-1.2-brightgreen.svg)
 
 A mod that overhauls the vanilla game research mechanics of the game RimWorld.
 
