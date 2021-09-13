@@ -6,6 +6,20 @@ A mod that overhauls the vanilla game research mechanics of the game RimWorld.
 
 **Notice:** Immersive Research requires Harmony to work correctly. You can Download it from its respective Steam Workshop page.
 
+**Xtra Notice** Pushed final update of work in progress code that I was working on last year. Deemed the mod to be deprecated, both by my enthusiasm for it, and the fact that other mods of similar style were starting to crop up (And now the fact it is being maintained by somebody else).
+
+It is VERY UNSTABLE, and I cannot guarantee that it can work with the latest versions of RimWorld (or any at all).
+
+Was working on:
+- Added major functionality to incorporate other mods with research options.
+- Implemented ability to generate patch xml based on the user's installed mods (was in progress, currently incorporates all mods regardless if active)
+	- This was in very early stage, and would break the mod if you uninstalled a mod from your game, requiring you to delete patch files manually.
+	- Would need this to be done within the game, probably within a mod settings window.
+- Seperate Mod Experiment Window, with adjusted material costs based on the length of the respective research. Experiments were sorted by the authors.
+	- This was as far as I could think to go, as you are unable to determine an experiment type from a ResearchProjectDef (I decided them myself).
+	- Was also in early stage, needs significant string editing to make it more pretty (currently has packageID as the mod name instead of the mod name itself).
+- Added ability to take specific experiments from the Filing Cabinet, either manually or by a colonist during a Bill.
+- 
 ## Features:
 
 ### Experiment System
