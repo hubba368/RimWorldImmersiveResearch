@@ -36,11 +36,6 @@ namespace ImmersiveResearch
         private List<ExperimentConfigUIElement> _experimentTypes = new List<ExperimentConfigUIElement>();
         private List<ExperimentConfigUIElement> _experimentNames = new List<ExperimentConfigUIElement>();
 
-        /*private List<string> _experimentNames = new List<string>();
-        private List<string> _experimentTypes = new List<string>();
-
-        private List<Texture2D> _experimentTypeIcons = new List<Texture2D>();
-        private List<Texture2D> _experimentIcons = new List<Texture2D>();*/
 
         public override Vector2 InitialSize
         {
@@ -153,7 +148,7 @@ namespace ImmersiveResearch
                 //Log.Error("Def not found");
                 isExperimentSelected = false;
             }
-            else
+            else 
             {
                 isExperimentSelected = true;
                 _selectedRecipe = finalDef;

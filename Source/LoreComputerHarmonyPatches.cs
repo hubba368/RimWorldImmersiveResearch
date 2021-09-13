@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
-using Verse;
-using Verse.AI;
-using System.Xml;
-using System.Xml.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 using UnityEngine;
+using Verse;
 
 namespace ImmersiveResearch
 {
@@ -52,6 +49,7 @@ namespace ImmersiveResearch
         float _weighting;
         List<ResearchTypes> _researchTypes;
         ResearchSizes _researchSize;
+        string _modResearchType;
 
         public ResearchProjectDef ProjectDef
         {
@@ -102,6 +100,7 @@ namespace ImmersiveResearch
         }
 
         public ResearchSizes ResearchSize { get; set; }
+        public string ModResearchType { get => _modResearchType; set => _modResearchType = value; }
 
         public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight, List<ResearchTypes> rTypes, ResearchSizes rSize)
         {
@@ -109,6 +108,15 @@ namespace ImmersiveResearch
             _isDiscovered = discovered;
             _weighting = weight;
             _researchTypes = rTypes;
+            _researchSize = rSize;
+        }
+
+        public ImmersiveResearchProject(ResearchProjectDef projDef, bool discovered, float weight, string modRType, ResearchSizes rSize)
+        {
+            _projectDef = projDef;
+            _isDiscovered = discovered;
+            _weighting = weight;
+            _modResearchType = modRType;
             _researchSize = rSize;
         }
 
@@ -134,27 +142,33 @@ namespace ImmersiveResearch
     }
 
 
-
-
-
     /// <summary>
     /// Class that uses Harmony to inject custom code into RimWorld code.
     /// </summary>
     [StaticConstructorOnStartup]
     static class LoreComputerHarmonyPatches
     {
+        private const int _smallModResearchCost = 500;
+        private const int _mediumModResearchCost = 1000;
+        private const int _largeModResearchCost = 1500;
 
-        private static float _neolithicProbability = 40.0f;
-        private static float _medievalProbability = 20.0f;
-        private static float _industrialProbability = 10.0f;
-        private static float _spacerAndAboveProbability = 5.0f;
-        private static float _rareDatadiskProbability = 50.0f;
-        private static float _superRareDatadiskProbability = 5.0f;
+        private const float _neolithicProbability = 40.0f;
+        private const float _medievalProbability = 20.0f;
+        private const float _industrialProbability = 10.0f;
+        private const float _spacerAndAboveProbability = 5.0f;
+        private const float _rareDatadiskProbability = 50.0f;
+        private const float _superRareDatadiskProbability = 5.0f;
+
+        private const string _smallResearchStr = "Small";
+        private const string _mediumResearchStr = "Medium";
+        private const string _largeResearchStr = "Large";
 
         public static List<ResearchProjectDef> FullConcreteResearchList = new List<ResearchProjectDef>(DefDatabase<ResearchProjectDef>.AllDefsListForReading); // a concrete list of all possible research options
 
         public static ResearchDict UndiscoveredResearchList;
-        
+
+        public static List<string> ModResearchDefNameList = new List<string>();
+
         static LoreComputerHarmonyPatches()
         {          
            
@@ -209,9 +223,462 @@ namespace ImmersiveResearch
             //harmony.Patch(AccessTools.Method(typeof(Thing), "ButcherProducts"),
             //    new HarmonyMethod(typeof(LoreComputerHarmonyPatches).GetMethod("AddDataDiskToMechanoidLoot")),
             //    null);
-                
 
+
+            // v2.5 TODO
+            // need to delete all mod files if not all found
+            // will either need to reloop to reacquire all remaining filenames if necessary then search and delete
+            // DONE
+
+            //Mod Experiment Config 
+            // need to generate mod names and sizes as just string lists i.e the default setting for list drawing
+            // should be exact same premise as previous experiment config
+            // need to add dropdown on experimentstackwindow for mod config
+            // DONE 
+
+            //Study changes - experiment storage
+            // need to make it so studying can pull from the experiment storage building
+            // will, in vague terms, simply just automate what collecting an experiment from the building already does
+            // except it chooses which to take from the study config instead of manual selection
+            // will probs have to create a custom jobdriver because studying is just crafting with extra steps - potential patch?
+            //
+            //Research window changes
+            // will need to think about changing the window to not remove mod options?
+            // if so, will need to think about alternatives to keep immersion
+            // maybe change the options to blank box with '??? requires experimentation'? 
+            // would have to be done within a patch mod though, and could add to potential conflicts with other mods (could be super unlikely though)
+            // 
+            //potential compat mode
+            // add experiment prerequisites for projects - look at applytechprint 
+            // potentially find way to make experiments also act as techprints - then can just xml patch research projs
+            //
+
+            //QoL additions
+            // Check mod research for prereqs, if they exist add those projs to essential category
+
+            // Refactoring
+            // break up LCHP constructor mod research code into funcs
+            //
+            Log.Message("Immersive-ish Research v.2.5 performing initial scan for generated Mod XML files.\n");
+            Log.Message("IF YOU HAVE INSTALLED/REMOVED ANY MODS PLEASE REGENERATE MOD FILES IN MOD SETTINGS!\n");
+
+            var modDetails = new List<string>();
+
+            string modDetailsPath = GetMainModDirectory(false, true) + "\\" + "IM_fileList.xml";
+
+            bool prevFilesFound = false;
+
+            if (File.Exists(modDetailsPath))
+            {
+                Log.Message("Found previously generated XML for current active mods.");
+
+                var xml = XDocument.Load(modDetailsPath);
+                var files = xml.Descendants().Elements();
+                List<string> result = new List<string>();
+                bool delete = false;
+
+                result.AddRange(Directory.GetFiles(GetMainModDirectory(false, true), "IM_*", SearchOption.AllDirectories));
+
+                if (result.Count < files.Count())                
+                    delete = true;
+                
+                if (delete)
+                {
+                    Log.Message("One or more generated files cannot be found. Please RESTART to regenerate them so your save will function correctly!!\n");
+                    File.Delete(modDetailsPath);
+
+                    foreach (var t in result)
+                    {
+                        File.Delete(t);
+                    }
+                    result.Clear();
+                }
+                else
+                {
+                    Log.Message("All mod generated def files successfully found.\n");
+                    prevFilesFound = true;
+
+                    // go through filenames again to get patched recipe defnames         
+                    for(int i = 0; i < files.Count(); i+=2)
+                    {
+                        string f = files.ElementAt(i).Value;
+                        string defName = f.Substring(f.IndexOf("IM_recipe") + "IM_recipe".Length);
+                        defName += "Research";
+                        ModResearchDefNameList.Add(defName);
+                    }
+                    result.Clear();
+                }
+            }
+
+            if (!prevFilesFound)
+            {
+                Log.Message("Immersive-ish Research v.2.5 performing initial scan for installed and active mods.\n");
+                var modDirs = LocateAllModDirectories();
+
+                if (modDirs != null)
+                {
+                    Log.Message("Found 1 or more active mods with Research Projects.\n");
+                    foreach (var t in modDirs)
+                    {
+                        var patchDoc = new XDocument();
+                        var recipeDoc = new XDocument();
+                        patchDoc = XDocument.Parse(@"<Patch>" + "</Patch>");
+                        recipeDoc = XDocument.Parse(@"<Defs>" + "</Defs>");
+
+                        bool hasSmall = false;
+                        bool hasMed = false;
+                        bool hasLarge = false;
+
+                        int cost;
+
+                        Log.Message("\nFound " + t.Key);
+                        foreach (var y in t.Value)
+                        {
+                            // generate researchprojdef patches
+                            // There is probably a MUCH easier way going about this, however this works fine FOR NOW (efficiency not taken into account)
+                            string patch = "";
+
+                            int.TryParse(y.Value, out cost);
+                            if (cost > 2000)
+                            {
+                                patch = GenerateModPatch(y.Key, t.Key, _largeResearchStr);
+                                hasLarge = true;
+                            }
+                            else if (cost <= 2000 && cost > 800)
+                            {
+                                patch = GenerateModPatch(y.Key, t.Key, _mediumResearchStr);
+                                hasMed = true;
+                            }
+                            else if (cost <= 800)
+                            {
+                                patch = GenerateModPatch(y.Key, t.Key, _smallResearchStr);
+                                hasSmall = true;
+                            }
+
+                            var test = XDocument.Parse(patch);
+
+                            var group = patchDoc.Element("Patch");
+                            group.Add(test.Elements());
+                        }
+
+
+                        // generate experiment recipes
+                        string recipe = "";
+                        string recipeDefName = "";
+
+                        if (hasSmall)
+                        {
+                            recipeDefName = _smallResearchStr + t.Key + "Research";
+
+                            recipe = GenerateModRecipe(recipeDefName, t.Key, _smallResearchStr, _smallModResearchCost);
+
+                            var recipes = XDocument.Parse(recipe);
+                            var group2 = recipeDoc.Element("Defs");
+
+                            group2.Add(recipes.Elements());
+                            recipeDoc.Save(GetMainModDirectory(false, true) + "\\Defs" + "\\RecipeDefs\\" + "IM_recipe" + t.Key + ".xml");
+                        }
+                        if (hasMed)
+                        {
+                            recipeDefName = _mediumResearchStr + t.Key + "Research";
+
+                            recipe = GenerateModRecipe(recipeDefName, t.Key, _mediumResearchStr, _mediumModResearchCost);
+
+                            var recipes = XDocument.Parse(recipe);
+                            var group2 = recipeDoc.Element("Defs");
+
+                            group2.Add(recipes.Elements());
+                            recipeDoc.Save(GetMainModDirectory(false, true) + "\\Defs" + "\\RecipeDefs\\" + "IM_recipe" + t.Key + ".xml");
+                        }
+                        if (hasLarge)
+                        {
+                            recipeDefName = _largeResearchStr + t.Key + "Research";
+
+                            recipe = GenerateModRecipe(recipeDefName, t.Key, _largeResearchStr, _largeModResearchCost);
+
+                            var recipes = XDocument.Parse(recipe);
+                            var group2 = recipeDoc.Element("Defs");
+
+                            group2.Add(recipes.Elements());
+                            recipeDoc.Save(GetMainModDirectory(false, true) + "\\Defs" + "\\RecipeDefs\\" + "IM_recipe" + t.Key + ".xml");
+                        }
+
+                        patchDoc.Save(GetMainModDirectory(false, true) + "\\Patches\\" + "IM_patch" + t.Key + ".xml");
+
+                        modDetails.Add("IM_recipe" + t.Key);
+                        modDetails.Add("IM_patch" + t.Key);
+                    }
+
+                    // generate file validation list
+                    var modCheckDoc = new XDocument(new XElement("ModFiles", from x in modDetails select new XElement("fileName", x)));
+                    modCheckDoc.Save(GetMainModDirectory(false, true) + "\\" + "IM_fileList.xml");
+                }
+                else
+                {
+                    Log.Error("Could not obtain active installed mods. Setting to default mod functionality.");
+                }
+            }
         }
+
+        private static string GenerateModPatch(string defName, string modName, string size)
+        {
+            string patch = "<Operation Class=\"PatchOperationAddModExtension\">" +
+            "<xpath>/Defs/ResearchProjectDef[defName=\"" + defName + "\"]</xpath>" +
+            "<value>" +
+            "<li Class=\"ImmersiveResearch.ResearchDefModExtension\">" +
+            "<modResearchType>" +
+            modName +
+            "</modResearchType>" +
+            "<ResearchSize>" +
+            size +
+            "</ResearchSize>" +
+            "</li>" +
+            "</value>" +
+            "</Operation>";
+
+            return patch;
+        }
+
+        private static string GenerateModRecipe(string defName, string modName, string costStr, int cost)
+        {
+           string recipe = "<RecipeDef>" +
+                        "<defName>" + defName + "</defName>" +
+                        "<label>" + costStr + " " + modName + " " + "project" + "</label>" +
+                        "<description>A " + costStr + " research project based on rumours and knowledge passed on from visitors. A project for the mod " + modName + ". Requires: " + cost + " silver.</description>" +
+                        "<jobString>Performing " + modName + " experiment.</jobString>" +
+                        "<workAmount>1750</workAmount>" +
+                        "<workSpeedStat>ResearchSpeed</workSpeedStat>" +
+                        "<effectWorking>Smelt</effectWorking>" +
+                        "<soundWorking>Recipe_Smelt</soundWorking>" +
+                        "<unfinishedThingDef>UnfinishedExperiment</unfinishedThingDef>" +
+                        "<ingredients>" +
+                        "<li>" +
+                        "<filter>" +
+                        "<thingDefs>" +
+                        "<li>Silver</li>" +
+                        "</thingDefs>" +
+                        "</filter>" +
+                        "<count>" + (float)cost / 10 + "</count>" +
+                        "</li>" +
+                        "</ingredients>" +
+                        "<products><FinishedExperiment>1</FinishedExperiment></products>" +
+                        "<fixedIngredientFilter><thingDefs><li>Silver</li></thingDefs></fixedIngredientFilter>" +
+                        "<modExtensions>" +
+                        "<li Class=\"ImmersiveResearch.ResearchDefModExtension\">" +
+                        "<modResearchType>" +
+                        modName +
+                        "</modResearchType>" +
+                        "<ResearchSize>" +
+                        costStr +
+                        "</ResearchSize>" +
+                        "</li>" +
+                        "</modExtensions>" +
+                        "</RecipeDef>";
+            return recipe;
+        }
+
+
+        private static string GetMainModDirectory(bool getIMDirectory = false, bool getIMLocalDirectory = false)
+        {
+            DirectoryInfo d = Directory.GetParent(Environment.CurrentDirectory);
+            string temp = d.FullName;
+            string relativePath = "";
+
+            if (!getIMLocalDirectory && !getIMDirectory)
+                return Path.GetFullPath(Path.Combine(temp, @"..\workshop\\content\\294100"));
+
+            if (getIMDirectory)
+                return Path.GetFullPath(Path.Combine(temp, @"..\workshop\\content\\294100\\1732571153"));
+
+            if(getIMLocalDirectory)
+                return Path.GetFullPath(Path.Combine(temp, @"RimWorld\\Mods\\ImmersiveResearch\\v1.2"));
+
+            return relativePath;
+        }
+
+
+        private static Dictionary<string, Dictionary<string, string>> LocateAllModDirectories()
+        {
+            string relativePath = GetMainModDirectory();
+
+            Dictionary<string, string> installedMods = new Dictionary<string, string>();
+
+            var modDirs = Directory.EnumerateDirectories(relativePath);
+
+            for (int i = 0; i < modDirs.Count(); i++)
+            {
+                string curPath = modDirs.ElementAt(i);
+                string curFolder = new DirectoryInfo(curPath).Name;
+                // skip our mod
+                if (curFolder == "1732571153")
+                    continue;
+
+                // get mod about file, then get packageID so we can get which mod directories to search
+                curPath += "\\About";
+
+                XDocument curXML = null;
+                try
+                {
+                    curXML = XDocument.Load(curPath + "\\About.xml");
+                }
+                catch
+                {
+                    Log.Error("Could not find mod About file. Defaulting...");
+                    Log.Error("Current Mod Folder: " + curPath);
+                    continue;
+                }
+
+                string node1 = null;
+
+                // this works for now in getting the packageId in highest point of the tree
+                // otherwise, any other way i've used can get packageIds from mod dependency entries.
+                var tempList = curXML.Root.Elements("packageId").ToList();
+                if (tempList.Count > 0)
+                {
+                    foreach (var e in tempList)
+                    {
+                        if (e.Parent.Name == "ModMetaData")
+                        {
+                            node1 = e.Value.ToString();
+                        }
+                    }
+                }
+                else
+                {
+                    Log.Error("No package ID on mod found. Defaulting...");
+                    Log.Error("Current Mod Folder: " + curPath);
+                    continue;
+                }
+
+                string temp2 = node1.ToLower();
+
+                if (installedMods.ContainsKey(temp2))
+                {
+                    continue;
+                }
+
+                installedMods.Add(temp2, modDirs.ElementAt(i));
+            }
+            Log.Message("Installed Mod Search Result");
+            foreach (var t in installedMods)
+                Log.Message(t.Key + " " + t.Value);
+            Log.Error("=======================================================");
+            var tempor = GetActiveInstalledMods(installedMods.Keys.ToList());
+
+            foreach (var key in installedMods.Keys.Except(tempor).ToList())
+                installedMods.Remove(key);
+            Log.Message("Active Mod Search Result");
+            foreach (var t in installedMods)
+                Log.Message(t.Key + " " + t.Value);
+            Log.Error("=======================================================");
+            var installedModsWithDefs = GetInstalledModsWithResearchDefs(installedMods);
+
+            // got to remove the pesky invalid chars for RW xml parsing
+            var finalResult = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach(var t in installedModsWithDefs)
+            {
+                string newKey = t.Key.Replace(".", "_");
+                finalResult.Add(newKey, t.Value);
+            }
+
+            return finalResult;
+        }
+
+
+        private static List<string> GetActiveInstalledMods(List<string> mods = null)
+        {
+            string configPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            configPath += "Low\\Ludeon Studios\\RimWorld by Ludeon Studios\\Config";
+
+            XDocument curXML = null;
+            try
+            {
+                curXML = XDocument.Load(configPath + "\\ModsConfig.xml");
+            }
+            catch
+            {
+                Log.Error("Could not find ModsConfig file. Defaulting...");
+                return null;
+            }
+
+            List<string> activeMods = new List<string>();
+
+            var node = curXML.Root.DescendantsAndSelf("activeMods").Elements();
+
+            for (int i = 0; i < node.Count(); i++)
+            {
+                // return whole list if not checking against an in-use set.
+                if (mods == null)
+                    activeMods.Add(node.ElementAt(i).Value);
+
+                for(int j  = 0; j < mods.Count; j++)
+                {
+                    if (node.ElementAt(i).Value == mods[j])
+                    {
+                        activeMods.Add(mods[j]);
+                    }
+                }
+            }
+
+            return activeMods;
+        }
+
+        private static Dictionary<string, Dictionary<string, string>> GetInstalledModsWithResearchDefs(Dictionary<string, string> mods)
+        {
+            Dictionary<string, Dictionary<string, string>> result = new Dictionary<string, Dictionary<string, string>>();
+
+            // gross looking (and triple nested for loop is epic and should be rectified) but just essentially searches mod directory for all Defs directories, then gets the xml file with latest write time
+            // then gets all researchprojDefs with names and costs
+
+            // if future past compat was considered, would need to change this search to look for older files.
+            // would probs be something within mod settings, a button to choose which game version to search for (1.1, 1.2 etc) then it just reruns the file searching functions
+            // and generates xml
+            foreach(var t in mods)
+            {
+                string curPath = t.Value;
+                if (Directory.Exists(curPath))
+                {
+                    var dir = new DirectoryInfo(curPath);
+                    var defDirs = dir.GetDirectories("Defs", SearchOption.AllDirectories);
+
+                    List<FileInfo> researchProjDefs = new List<FileInfo>();
+
+                    for(int i = 0; i < defDirs.Length; i++)
+                    {
+                        var temp = defDirs[i].GetFiles("ResearchProject*", SearchOption.AllDirectories);
+                        researchProjDefs.AddRange(temp);
+                    }
+
+                    if (researchProjDefs.Count > 0)
+                    {
+                        var file = researchProjDefs.OrderByDescending(x => x.LastWriteTime).First();
+                        // get research name and base cost
+                        var curXML = XDocument.Load(file.FullName);
+                        var projName = curXML.Root.Descendants("ResearchProjectDef").Elements("defName");
+                        var projCost = curXML.Root.Descendants("ResearchProjectDef").Elements("baseCost");
+
+                        var projs = new Dictionary<string, string>();
+                        for(int j = 0; j < projName.Count(); j++)
+                            projs.Add(projName.ElementAt(j).Value, projCost.ElementAt(j).Value);
+
+                        result.Add(t.Key, projs);
+                    }
+                    else
+                    {
+                        Log.Error("Mod does not have any researchProjectDef files.");
+                        Log.Error(t.Key + " " + t.Value);
+                    }
+                }
+            }
+
+            if(result.Count <= 0)
+            {
+                return null;
+            }
+            return result;
+        }
+
 
         // postfix patch of 'StartedNewGame'.
         // Initialise our undiscovered research list and remove undiscovereds from the main list.
@@ -233,6 +700,7 @@ namespace ImmersiveResearch
                     {
                         UndiscoveredResearchList.MainResearchDict.Add(proj.defName,
                             new ImmersiveResearchProject(proj));
+
                     }
                     else
                     {
@@ -270,9 +738,18 @@ namespace ImmersiveResearch
 
                 if (proj.HasModExtension<ResearchDefModExtension>())
                 {
-                    UndiscoveredResearchList.MainResearchDict[proj.defName].Weighting = 0.0f;
-                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = proj.GetModExtension<ResearchDefModExtension>().researchTypes;
-                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    if(proj.GetModExtension<ResearchDefModExtension>().modResearchType != "")
+                    {
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].Weighting = 0.0f;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ModResearchType = proj.GetModExtension<ResearchDefModExtension>().modResearchType;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    }
+                    else
+                    {
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].Weighting = 0.0f;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = proj.GetModExtension<ResearchDefModExtension>().researchTypes;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    }                    
                 }
                 else
                 {
@@ -294,6 +771,19 @@ namespace ImmersiveResearch
             Find.LetterStack.ReceiveLetter("Immersive Research - Filing Cabinet", "Immersive Research - Filing Cabinet \n\nTo make the process of storing experiments easier, you can construct a Filing Cabinet. This will store all of your finished experiments, and you will be able to retrieve specific experiments at any time.\n\n Be careful though, as losing the cabinet can mean the loss of all of your stored experiments!", LetterDefOf.NeutralEvent);
         }
 
+        // FUTURE FEATURES:
+        // desperately need to fix mod research option, if could take mod research cost, means i could add small and medium options whioch would alleviate some issues 
+        // if could get mod author could POTENTIALLY add a second window just for mods, if that was possible
+        //======================
+        // need some kind of fallback function if researchpal or other window overrides are installed.
+        // if couldnt feasibly remove projs in window, could forgo the hiding of research options in that case.
+        //======================
+        // add some kind of 'group study' gathering spot- similar to parties?
+        // would have to create custom room tag and gathering func, and then give all attendees researcher hediff
+        // =====================
+        // need some kind of UI to showcase which colonist knows which proj
+        // cant do this through hediff description, could potentially create extra dialog on study config for users to click to open
+
 
         // postfix patch of 'LoadedGame'
         // Load our undiscovered research list from file and remove undiscovereds from the main list.
@@ -306,12 +796,20 @@ namespace ImmersiveResearch
             {
                 if (proj.HasModExtension<ResearchDefModExtension>())
                 {
-                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = proj.GetModExtension<ResearchDefModExtension>().researchTypes;
-                    UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    if (proj.GetModExtension<ResearchDefModExtension>().modResearchType != "")
+                    {
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].Weighting = 0.0f;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ModResearchType = proj.GetModExtension<ResearchDefModExtension>().modResearchType;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    }
+                    else
+                    {
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = proj.GetModExtension<ResearchDefModExtension>().researchTypes;
+                        UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchSize = proj.GetModExtension<ResearchDefModExtension>().ResearchSize;
+                    }
                 }
                 else
                 {
-
                     List<ResearchTypes> temp = new List<ResearchTypes>();
                     temp.Add(ResearchTypes.Mod);
                     UndiscoveredResearchList.MainResearchDict[proj.defName].ResearchTypes = new List<ResearchTypes>(temp);
@@ -374,7 +872,6 @@ namespace ImmersiveResearch
             }
         }
 
-        // TODO: find potential way to not have to patch this?
         //MakeRecipeProducts
         public static void SetFinishedExpOnMake(ref RecipeDef recipeDef, ref Pawn worker, ref List<Thing> ingredients)
         {
@@ -403,6 +900,11 @@ namespace ImmersiveResearch
 
                         recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().researchTypes.AddRange(recipeDef.GetModExtension<ResearchDefModExtension>().researchTypes);
                         recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().ResearchSize = recipeDef.GetModExtension<ResearchDefModExtension>().ResearchSize;
+
+                        if(recipeDef.GetModExtension<ResearchDefModExtension>().modResearchType != "")
+                        {
+                            recipeDef.ProducedThingDef.GetModExtension<ResearchDefModExtension>().modResearchType = recipeDef.GetModExtension<ResearchDefModExtension>().modResearchType;
+                        }
                     }
                 }
             }
@@ -452,18 +954,33 @@ namespace ImmersiveResearch
 
             if (recipe.HasModExtension<ResearchDefModExtension>())
             {
-                var temp = UndiscoveredResearchList.MainResearchDict.Where(item => item.Value.ResearchSize == recipe.GetModExtension<ResearchDefModExtension>().ResearchSize 
-                && item.Value.ResearchTypes.Any(x => x == recipe.GetModExtension<ResearchDefModExtension>().researchTypes[0]));
-                
-                foreach(KeyValuePair<string, ImmersiveResearchProject> p in temp)
+                if(recipe.GetModExtension<ResearchDefModExtension>().modResearchType != "")
                 {
-                    if(p.Value.IsDiscovered == false)
+                    var modproj = UndiscoveredResearchList.MainResearchDict.Where(item => item.Value.ResearchSize == recipe.GetModExtension<ResearchDefModExtension>().ResearchSize
+                    && item.Value.ModResearchType == recipe.GetModExtension<ResearchDefModExtension>().modResearchType);
+
+                    foreach (KeyValuePair<string, ImmersiveResearchProject> p in modproj)
                     {
-                        result++;
+                        if (p.Value.IsDiscovered == false)
+                        {
+                            result++;
+                        }
                     }
                 }
-            }
+                else
+                {
+                    var proj = UndiscoveredResearchList.MainResearchDict.Where(item => item.Value.ResearchSize == recipe.GetModExtension<ResearchDefModExtension>().ResearchSize
+                && item.Value.ResearchTypes.Any(x => x == recipe.GetModExtension<ResearchDefModExtension>().researchTypes[0]));
 
+                    foreach (KeyValuePair<string, ImmersiveResearchProject> p in proj)
+                    {
+                        if (p.Value.IsDiscovered == false)
+                        {
+                            result++;
+                        }
+                    }
+                }                              
+            }
             return result;
         }
 
@@ -690,9 +1207,7 @@ namespace ImmersiveResearch
             return researchName;
         }
 
-        // prefix patch of ResearchWindow DrawRightRect function
-        // UI update function called on the righthand research window when it is opened.
-        // TODO: maybe overhaul window completely?
+
         public static void UpdateResearchGraph()
         {
             List<ResearchProjectDef> researchDatabaseRef = DefDatabase<ResearchProjectDef>.AllDefsListForReading;
@@ -709,9 +1224,7 @@ namespace ImmersiveResearch
             }
         }
 
-        // TODO: make 'undiscoveredResearchDef' and insert into DefDatabase to take place of removed research buttons
-        // give the def a name of ??? and desc of some kinda undiscovered lore text
-        // CANT BE DONE WITHOUT SIGNIFICANT CHANGES TO RESEARCH WINDOW: WILL PROBS REQUIRE COMPLETE OVERHAUL TO DO
+
         private static bool EmptyResearchGraphOfUndiscovered(List<ResearchProjectDef> Rlist)
         {
 
@@ -767,6 +1280,7 @@ namespace ImmersiveResearch
             return targetParams;
         }
 
+
         // postfix patch of Drop down menu function
         public static void AddComputerDropDownMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
@@ -778,6 +1292,7 @@ namespace ImmersiveResearch
         // really dont wanna use a static var to store a requested thing
         // find a way to pass params to jobdrivers
         public static Thing TempRequestedExp;
+        public static string SpecificRequestedExperimentDefName;
 
         private static void FilingCabinetFloatMenu(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {

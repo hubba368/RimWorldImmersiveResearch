@@ -11,6 +11,8 @@ namespace ImmersiveResearch
 {
     public class WorkGiver_StudyExperiment : WorkGiver_DoBill
     {
+        private List<Thing> _cabinets = LoreComputerHarmonyPatches.GetAllOfThingsOnMap("ExperimentFilingCabinet");
+
         public override bool ShouldSkip(Pawn pawn, bool forced = false)
         {
             return base.ShouldSkip(pawn, forced);
@@ -27,8 +29,9 @@ namespace ImmersiveResearch
             {
                 return null;
             }
+            _cabinets = LoreComputerHarmonyPatches.GetAllOfThingsOnMap("ExperimentFilingCabinet");
 
-            for(int i = 0; i < billGiver.BillStack.Count; i++)
+            for (int i = 0; i < billGiver.BillStack.Count; i++)
             {
                 var table = (Building_StudyTable)billGiver;
                 var bill = billGiver.BillStack[i];
@@ -38,7 +41,36 @@ namespace ImmersiveResearch
                 {                   
                     List<ThingCount> temp = new List<ThingCount>();
                     var uniqueExpThing = exp.uniqueThingIng;
+                    string rDefName = exp.uniqueThingIng.def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment;
 
+                    if (uniqueExpThing.stackCount == 0)
+                    {
+                        if (_cabinets == null)
+                        {
+                            // Messages.Message("No Built Experiment Filing Cabinet(s) in Colony.", MessageTypeDefOf.RejectInput, historical: false);
+                            Log.Error("No experiment cabinets in colony. Job will attempt to retrieve experiment from any on map");
+                        }
+                        else
+                        {// TODO: loop through cabinets on map if more than one
+                            for(int j = 0; j < _cabinets.Count; j++)
+                            {
+                                var cabinet = _cabinets[j] as Building_ExperimentFilingCabinet;
+                                if (cabinet.ListCount != 0 && cabinet.ResearchDefsInCabinet.Contains(rDefName))
+                                {
+                                    LoreComputerHarmonyPatches.SpecificRequestedExperimentDefName = rDefName;
+                                    var job = JobMaker.MakeJob(TakeSpecificExperimentJobDefOf.CabinetTakeSpecificExperiment, cabinet);
+                                    return job;
+                                }
+                                else
+                                {
+                                    Log.Error("either cabinet has nothing or does not have correct exp to take");
+                                }
+                            }
+
+                        }// BIG TODO!!!!!!! REMOVE STATIC VAR AND USE SOME KINDA FUNC TO PASS THIS!!!
+                        uniqueExpThing = LoreComputerHarmonyPatches.TempRequestedExp;
+                    }
+                    
                     // Get unique exp thing per bill
                     if (billGiver.BillStack.Bills.Count > 0)
                     {// TODO need workaround for pausing a study in progress

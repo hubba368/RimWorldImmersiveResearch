@@ -12,18 +12,18 @@ namespace ImmersiveResearch
         private List<ResearchTypes> _thingResearchTypes = new List<ResearchTypes>();
         private ResearchSizes _thingResearchSize = 0;
         private List<ResearchProjectDef> _researchProjsForSelection = new List<ResearchProjectDef>();
-
+        private string _modResearchType = "";
         public List<ResearchTypes> ThingResearchTypes { get => _thingResearchTypes; set => _thingResearchTypes = value; }
         public ResearchSizes ThingResearchSize { get => _thingResearchSize; set => _thingResearchSize = value; }
+        public string ModResearchType { get => _modResearchType; set => _modResearchType = value; }
 
         public override void PostMake()
         {
             //TODO: move this from post make so a NEW research proj isnt discovered every time an new instance of this appears in the game world
             _thingResearchTypes = def.GetModExtension<ResearchDefModExtension>().researchTypes;   
             _thingResearchSize = def.GetModExtension<ResearchDefModExtension>().ResearchSize;
+            _modResearchType = def.GetModExtension<ResearchDefModExtension>().modResearchType;
 
-            //Log.Error(_thingResearchSize.ToString());
-            //Log.Error(_thingResearchTypes[0].ToString());
             if (def.GetModExtension<ResearchDefModExtension>().ExperimentHasBeenMade)
             {
                 // Log.Error("experiment has been made already");
@@ -37,7 +37,14 @@ namespace ImmersiveResearch
                 }
                 else
                 {
-                    Log.Error("Thing_FinishedExperiment failed to get research types from recipe.");
+                    if (!string.IsNullOrEmpty(_modResearchType))
+                    {
+                        GetModResearchProjByType();
+                    }
+                    else
+                    {
+                        Log.Error("Thing_FinishedExperiment failed to get research types from recipe.");
+                    }                  
                 }
             }
             base.PostMake();
@@ -66,6 +73,31 @@ namespace ImmersiveResearch
             def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment = temp;
         }
 
+        private void GetModResearchProjByType()
+        {
+            if (def.HasModExtension<ResearchDefModExtension>())
+            {
+                if(def.GetModExtension<ResearchDefModExtension>().modResearchType != "")
+                {
+                    var tempDict = LoreComputerHarmonyPatches.UndiscoveredResearchList.MainResearchDict;
+                    var tempProjList = tempDict.Values.ToList();
+                    tempProjList.RemoveAll(item => item.ModResearchType == "");
+                    tempProjList.RemoveAll(item => item.ModResearchType != def.GetModExtension<ResearchDefModExtension>().modResearchType);
+                    tempProjList.RemoveAll(item => item.ResearchSize != def.GetModExtension<ResearchDefModExtension>().ResearchSize);
+
+                    var finalList = new List<ResearchProjectDef>();
+
+                    for (int i = 0; i < tempProjList.Count; i++)
+                    {
+                        finalList.Add(tempProjList[i].ProjectDef);
+                    }
+
+                    _researchProjsForSelection.AddRange(finalList);
+                    SelectResearch();
+                }
+            }
+        }
+
         private void GetResearchProjsByType()
         {
             if (def.HasModExtension<ResearchDefModExtension>())
@@ -92,9 +124,17 @@ namespace ImmersiveResearch
                     else
                     {
                         var t = TempDict.Values.ToList().Where(item => item.ResearchSize == _thingResearchSize);
-                        var finalSearchSpace = t.Where(item => item.ResearchTypes.Any(x => x == _thingResearchTypes[0]));
+                        List<ImmersiveResearchProject> finalSearchSpace = new List<ImmersiveResearchProject>();
 
-                        foreach(ImmersiveResearchProject p in finalSearchSpace)
+                        foreach(var x in t)
+                        {
+                            var except = x.ResearchTypes.Intersect(_thingResearchTypes);
+                            var final = t.Where(y => y.ResearchTypes == except);
+                            finalSearchSpace.AddRange(final);
+                        }
+
+
+                        foreach (ImmersiveResearchProject p in finalSearchSpace)
                         {
 
                             var ProjDef = p.ProjectDef != null ? p.ProjectDef : null;

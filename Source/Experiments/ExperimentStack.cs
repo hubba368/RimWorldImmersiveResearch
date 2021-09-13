@@ -126,7 +126,7 @@ namespace ImmersiveResearch
             }
         }
 
-        public Experiment DoExperimentListing(Rect rect, Building_ExperimentBench selTable, ref Vector2 scrollPosition, ref float viewHeight)
+        public Experiment DoExperimentListing(Rect rect, Func<List<FloatMenuOption>> expOptionsMaker, Building_ExperimentBench selTable, ref Vector2 scrollPosition, ref float viewHeight)
         {
             for(int i = 0; i < _experiments.Count; i++)
             {
@@ -142,7 +142,7 @@ namespace ImmersiveResearch
                 rect2.x += 10f;
                 if (Widgets.ButtonText(rect2, "Perform Experiment"))
                 {
-                    Find.WindowStack.Add(new Dialog_ExperimentConfig(selTable));
+                    Find.WindowStack.Add(new FloatMenu(expOptionsMaker()));
                 }
             }
             // draw Experiment Entry In List

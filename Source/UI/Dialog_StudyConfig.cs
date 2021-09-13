@@ -20,6 +20,8 @@ namespace ImmersiveResearch
         private List<Tuple<string, Thing>> _finishedExperimentList = new List<Tuple<string, Thing>>();
         private List<Tuple<string, Thing>> _pawnsInColony = new List<Tuple<string, Thing>>();
 
+        private List<Thing> _cabinets = LoreComputerHarmonyPatches.GetAllOfThingsOnMap("ExperimentFilingCabinet");
+
         public override Vector2 InitialSize
         {
             get
@@ -46,9 +48,17 @@ namespace ImmersiveResearch
                 }
             }
 
+            _cabinets = LoreComputerHarmonyPatches.GetAllOfThingsOnMap("ExperimentFilingCabinet");
+            foreach (var t in _cabinets)
+            {
+                var cabinet = t as Building_ExperimentFilingCabinet;
+                foreach (var exp in cabinet.CabinetThings)
+                {
+                    _finishedExperimentList.Add(new Tuple<string, Thing>(exp.Key, exp.Value));
+                }
+            }
 
-
-            if(!(from t in DefDatabase<ThingDef>.AllDefs where t.defName == "FinishedExperiment" select t).TryRandomElement(out ThingDef finalDef))
+            if (!(from t in DefDatabase<ThingDef>.AllDefs where t.defName == "FinishedExperiment" select t).TryRandomElement(out ThingDef finalDef))
             {
                 Log.Error("Unable to locate finished experiment def in DefDatabase.", false);
             }
@@ -69,14 +79,13 @@ namespace ImmersiveResearch
                     var comp = thing.TryGetComp<ResearchThingComp>();
 
                     _finishedExperimentList.Add(new Tuple<string, Thing>(thing.TryGetComp<ResearchThingComp>().researchDefName, thing));
-                }
-               // Log.Error("Num of experiments in colony: " + thingList.Count);
+                }             
             }
         }
 
         public override void DoWindowContents(Rect inRect)
         {
-            Thing selectedExperiment = null;
+            Thing selectedExperimentThing = null;
             string selectedExperimentName = "";
             Pawn selectedPawn = null;
             bool isExperimentSelected = false;
@@ -120,7 +129,7 @@ namespace ImmersiveResearch
             }
             else
             {
-                selectedExperiment = _expsInColony.SelectedEntry != null ? _expsInColony.SelectedEntry.EntryAttachedThing : null;
+                selectedExperimentThing = _expsInColony.SelectedEntry != null ? _expsInColony.SelectedEntry.EntryAttachedThing : null;
                 selectedExperimentName = _expsInColony.SelectedEntry?.EntryLabel;
                 _expsInColony.DrawTextListWithAttachedThing(AddExpRect, _finishedExperimentList, "All Experiments In Colony");
             }
@@ -198,12 +207,15 @@ namespace ImmersiveResearch
                     Bill newBill = (Bill_Production)selectedRecipeDef.MakeNewBill();
 
                     newStudy.uniquePawnDoer = selectedPawn;
-                    newStudy.uniqueThingIng = selectedExperiment;
+                    newStudy.uniqueThingIng = selectedExperimentThing;
                     _selectedTable.ExpStack.AddExperiment(newStudy);
                     _selectedTable.ExpStack.AddExperimentWithBill(newBill);
                     newBill.pawnRestriction = selectedPawn;
-                    selectedExperiment.def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment = selectedExperimentName;
+                    selectedExperimentThing.def.GetModExtension<ResearchDefModExtension>().ResearchDefAttachedToExperiment = selectedExperimentName;
                     isExperimentSelected = false;
+                  
+
+
                     this.Close();
                 }
                 else

@@ -18,6 +18,7 @@ namespace ImmersiveResearch
 
         public int ListCount => researchDefsInCabinet.Count;
         public Dictionary<string, Thing> CabinetThings => experimentsInCabinet;
+        public List<string> ResearchDefsInCabinet => researchDefsInCabinet;
 
         public Building_ExperimentFilingCabinet()
         {
@@ -69,6 +70,8 @@ namespace ImmersiveResearch
                 experimentsInCabinet[defToTake].def.GetModExtension<ResearchDefModExtension>().ExperimentHasBeenMade = true;
                 experimentsInCabinet[defToTake].def.GetModExtension<ResearchDefModExtension>().ResearchSize = ResearchSizes.None;
                 experimentsInCabinet[defToTake].def.GetModExtension<ResearchDefModExtension>().researchTypes.Clear();
+                if (experimentsInCabinet[defToTake].def.GetModExtension<ResearchDefModExtension>().modResearchType != "")
+                    experimentsInCabinet[defToTake].def.GetModExtension<ResearchDefModExtension>().modResearchType = "";
 
                 var newThing = ThingMaker.MakeThing(experimentsInCabinet[defToTake].def) as Thing_FinishedExperiment;
 
@@ -81,6 +84,7 @@ namespace ImmersiveResearch
                 result = newThing;
 
                 experimentsInCabinet.Remove(defToTake);
+                ResearchDefsInCabinet.RemoveAll(x => x == defToTake);
             }
             return result;
 

@@ -31,7 +31,29 @@ namespace ImmersiveResearch
         {
             Vector2 windowSize = _winSize;
             Rect rect1 = new Rect(0f, 0f, windowSize.x, windowSize.y).ContractedBy(10f);
-             _mouseoverBill = SelectedExperimentTable.ExpStack.DoExperimentListing(rect1, SelectedExperimentTable, ref _scrollPosition, ref _viewHeight);           
+
+            //create drop down for selected exp type
+            Func<List<FloatMenuOption>> expOptionsMaker = delegate
+            {
+                List<FloatMenuOption> dropList = new List<FloatMenuOption>();
+
+                ITab_Experiments tab = this;
+                dropList.Add(new FloatMenuOption("Experiment", delegate
+                {
+                    Find.WindowStack.Add(new Dialog_ExperimentConfig(SelectedExperimentTable));
+                }));
+                dropList.Add(new FloatMenuOption("Mod Experiment", delegate
+                {
+                    Find.WindowStack.Add(new Dialog_ModExperimentConfig(SelectedExperimentTable));
+                }));
+                if (!dropList.Any())
+                {
+                    dropList.Add(new FloatMenuOption("NoneBrackets".Translate(), null));
+                }
+                return dropList;
+            };
+
+             _mouseoverBill = SelectedExperimentTable.ExpStack.DoExperimentListing(rect1, expOptionsMaker, SelectedExperimentTable, ref _scrollPosition, ref _viewHeight);           
         }
 
 

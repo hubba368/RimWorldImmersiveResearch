@@ -55,11 +55,11 @@ namespace ImmersiveResearch
             var decodeTheData = new Toil();
             decodeTheData.initAction = delegate
             {
-                _heldDataDisk.Destroy();
+
                 //make a new unlocked datadisk based on weighting
                 // show alert when complete
                 Thing temp = ThingMaker.MakeThing(LoreComputerHarmonyPatches.ChooseDataDiskTypeOnDecrypt().def);
-
+                _heldDataDisk.Destroy();
                 GenSpawn.Spawn(temp.def, _loreComp.Position, _loreComp.Map);
 
                 Find.LetterStack.ReceiveLetter("Datadisk decoded", "A datadisk has been decoded.", LetterDefOf.PositiveEvent);

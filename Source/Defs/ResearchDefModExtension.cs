@@ -15,5 +15,7 @@ namespace ImmersiveResearch
         public string ResearchDefAttachedToExperiment;
 
         public bool ExperimentHasBeenMade;
+
+        public string modResearchType = "";
     }
 }
